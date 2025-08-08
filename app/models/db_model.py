@@ -17,7 +17,7 @@ connection_string = f"mysql+pymysql://{db_config['user']}:{db_config['password']
 engine = create_engine(connection_string)
 
 
-query = """
+query_customergetinfo = """
 SELECT
     کد_مشتری AS customer_code,
     نام_مشتری as customer_name,

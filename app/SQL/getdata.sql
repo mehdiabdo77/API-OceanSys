@@ -54,3 +54,23 @@ SELECT
 FROM  dw_gazal.customer_tbl_main
 WHERE واحد_سازمانی = 'مويرگي تهران'
 LIMIT 10
+
+
+
+
+
+
+
+
+CREATE TABLE DisActiveDescription (
+    customer_code INT NOT NULL,
+    Reason VARCHAR(255) NOT NULL,
+    Description TEXT,
+    PRIMARY KEY (customer_code)
+);
+
+
+ALTER TABLE DisActiveDescription
+ADD COLUMN username VARCHAR(255),
+ADD COLUMN date_shamsi VARCHAR(20),
+ADD COLUMN date_miladi DATETIME;

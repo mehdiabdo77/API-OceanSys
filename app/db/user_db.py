@@ -1,4 +1,9 @@
 import pandas as pd
+from sqlalchemy import text
+import jdatetime
+from datetime import datetime
+
+from app.models.post_model import DisActiveDescription
 from ..models.db_model import *
 
 def getUserDB(
@@ -18,7 +23,7 @@ def getCustomerInfo(
 
     try:
         # خواندن فایل اکسل
-        df = pd.read_sql(query, engine)
+        df = pd.read_sql(query_customergetinfo, engine)
         
         df = df[df['username'] == user ]
         
@@ -38,3 +43,34 @@ def getCustomerInfo(
     except Exception as e:
         print(f"Unexpected error: {str(e)}")
         return {"error": str(e), "data": {}}
+   
+
+def sendDisActiveDescription(data: DisActiveDescription , username: str):
+    with engine.connect() as conn:
+        # بررسی وجود قبلی
+        check_sql = text("""
+            SELECT COUNT(*) FROM DisActiveDescription WHERE customer_code = :customer_code
+        """)
+        result = conn.execute(check_sql, {"customer_code": data.customer_code}).scalar()
+        print(f"Check result for customer_code {data.customer_code}: {result}")
+        if int(result) > 0:
+            return {"error": "This customer has already been deactivated."}
+        # درج جدید
+        date_miladi = datetime.now()
+        date_shamsi = jdatetime.datetime.now().strftime('%Y/%m/%d')
+        sql = text("""
+            INSERT INTO DisActiveDescription (customer_code, Reason, Description, username, date_shamsi, date_miladi)
+            VALUES (:customer_code, :Reason, :Description, :username, :date_shamsi, :date_miladi)
+        """)
+        
+        conn.execute(sql, {
+            "customer_code": data.customer_code,
+            "Reason": data.Reason,
+            "Description": data.Description,
+            "username": username,
+            "date_shamsi": date_shamsi,
+            "date_miladi": date_miladi
+            
+        })
+        conn.commit()
+        return {"message": "Customer deactivated successfully"}

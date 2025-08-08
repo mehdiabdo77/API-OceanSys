@@ -23,5 +23,10 @@ class CustomerEditModel(BaseModel):
     dateVisit : int
     username : str
 
+
+class DisActiveDescription(BaseModel):
+    customer_code: int 
+    Reason: str
+    Description: str
     
     
