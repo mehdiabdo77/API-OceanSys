@@ -3,20 +3,9 @@ from sqlalchemy import text
 import jdatetime
 from datetime import datetime
 
-from app.models.post_model import DisActiveDescription
+from app.models.post_model import DisActiveDescription , ProductCategory
 from ..models.db_model import *
 
-def getUserDB(
-     user
-):
-     try:
-          df = pd.read_excel("db.xlsx")
-          row = df[df['user'] == user ].iloc[0]
-          row = row.to_dict()
-          return  row
-     except:
-          return None
-     
 def getCustomerInfo(
      user
 ):   
@@ -64,7 +53,7 @@ def sendDisActiveDescription(data: DisActiveDescription , username: str):
         """)
         
         conn.execute(sql, {
-            "customer_code": data.customer_code,
+            "customer_code": int(data.customer_code),
             "Reason": data.Reason,
             "Description": data.Description,
             "username": username,
@@ -74,3 +63,28 @@ def sendDisActiveDescription(data: DisActiveDescription , username: str):
         })
         conn.commit()
         return {"message": "Customer deactivated successfully"}
+    
+ 
+def sendProductCategory(data: ProductCategory , username: str):
+    with engine.connect() as conn:
+        #TODO بعد کاری کن اخرین رکرود تو اینجا در هر روز زخیره بشه
+        date_miladi = datetime.now()
+        date_shamsi = jdatetime.datetime.now().strftime('%Y/%m/%d')
+        
+        insert_sql = text("""
+            INSERT INTO ProductCategoryCustomer (customer_code, sku, username, date_shamsi, date_miladi)
+            VALUES (:customer_code, :sku, :username, :date_shamsi, :date_miladi)
+        """)
+
+        for item in data.sku:            # ذخیرهٔ هر SKU در یک ردیف مستقل
+            conn.execute(insert_sql, {
+                "customer_code": int(data.customer_code),
+                "sku": item,
+                "username": username,
+                "date_shamsi": date_shamsi,
+                "date_miladi": date_miladi
+            })
+        
+        conn.commit()
+        return {"message": "Product categories saved successfully"}
+        

@@ -25,8 +25,13 @@ class CustomerEditModel(BaseModel):
 
 
 class DisActiveDescription(BaseModel):
-    customer_code: int 
+    customer_code: str 
     Reason: str
     Description: str
     
+class ProductCategory(BaseModel):
+    customer_code: str 
+    sku: list;
     
+
+#crmCustomerDescription

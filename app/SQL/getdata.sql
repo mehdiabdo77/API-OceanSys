@@ -1,4 +1,4 @@
--- Active: 1686921763551@@127.0.0.1@3306@ocean
+-- Active: 1753974425566@@127.0.0.1@3306@ocean
 SELECT
     کد_مشتری AS customer_code,
     نام_مشتری as customer_name,
@@ -74,3 +74,13 @@ ALTER TABLE DisActiveDescription
 ADD COLUMN username VARCHAR(255),
 ADD COLUMN date_shamsi VARCHAR(20),
 ADD COLUMN date_miladi DATETIME;
+
+
+
+CREATE TABLE ProductCategoryCustomer(
+    customer_code INT NOT NULL,
+    sku VARCHAR(100) NOT NULL,
+    username VARCHAR(255),
+    date_shamsi VARCHAR(20),
+    date_miladi DATETIME
+);
