@@ -1,27 +1,20 @@
 from typing import Optional, Union
 from pydantic import BaseModel
 
-
-    
 class CustomerEditModel(BaseModel):
-    customer_code: int 
-    national_code: str
-    area: str # محدوده
-    zone: str # ناحیه
-    route: str # مسیر
-    latitude: float 
-    longitude: float  
-    status: str
-    address: str
-    phone: str
-    mobile: str | None
-    postal_code: str | None
-    username: str
-    datavisit : str
-    visited : int
-    edit : int
-    dateVisit : int
-    username : str
+    customer_code: int
+    nationalCode: str | None = None
+    roleCode: int | None = None
+    postalCode: str | None = None
+    customerboard: str | None = None  # customer_board در جدول
+    custumername: str | None = None   # customer_name در جدول
+    address: str | None = None
+    mobileNumber: str | None = None   # mobile_number در جدول
+    mobileNumber2: str | None = None  # mobile_number2 در جدول
+    phoneNumber: str | None = None    # phone_number در جدول
+    storeArea: int | None = None      # store_area در جدول
+    
+    
 
 
 class DisActiveDescription(BaseModel):
@@ -33,5 +26,8 @@ class ProductCategory(BaseModel):
     customer_code: str 
     sku: list;
     
-
-#crmCustomerDescription
+    
+class CRMCustomerDescription(BaseModel):
+    customer_code: str 
+    Description: str
+    

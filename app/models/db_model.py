@@ -33,9 +33,14 @@ SELECT
     تلفن_اول AS phone,
     تلفن_همراه AS mobile,
     کد_پستی_مشتری AS postal_code,
-    'mahdi' AS username,
-    "1404/04/05" as datavisit,
+    `Seller` AS username,
+    datavisit,
+    upload_date,
     isvisit as visited,
-    0 as edit
+    edit as edit
 FROM customer
+WHERE upload_date = (
+    SELECT MAX(upload_date) 
+    FROM customer
+);
 """

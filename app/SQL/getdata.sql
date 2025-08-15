@@ -84,3 +84,71 @@ CREATE TABLE ProductCategoryCustomer(
     date_shamsi VARCHAR(20),
     date_miladi DATETIME
 );
+
+
+CREATE TABLE CRMCustomerDescription(
+    customer_code INT NOT NULL,
+    description_Crm TEXT NOT NULL,
+    username VARCHAR(255),
+    date_shamsi VARCHAR(20),
+    date_miladi DATETIME
+);
+
+
+
+CREATE TABLE CustomerIditTabel (
+    customer_code INT NOT NULL,
+    national_code VARCHAR(12),
+    role_code VARCHAR(20),
+    postal_code VARCHAR(12),
+    customer_board VARCHAR(255),
+    customer_name VARCHAR(255),
+    address TEXT,
+    mobile_number VARCHAR(20),
+    mobile_number2 VARCHAR(20),
+    phone_number VARCHAR(20),
+    store_area INT,
+    username VARCHAR(200),
+    date_shamsi VARCHAR(20),
+    date_miladi DATETIME
+)
+
+
+
+
+
+
+
+
+ALTER TABLE customer
+ADD COLUMN edit SMALLINT
+
+
+UPDATE customer set datavisit = '1404/05/30'
+
+
+SELECT
+    کد_مشتری AS customer_code,
+    نام_مشتری as customer_name,
+    تابلو_مشستری AS customer_board,
+    کد_ملی AS national_code,
+    محدوده AS "area",
+    ناحیه AS "zone",
+    مسیر AS "route",
+    Latitude AS latitude,
+    Longitude AS longitude,
+    وضعیت AS status,
+    آدرس_مشتری AS address,
+    تلفن_اول AS phone,
+    تلفن_همراه AS mobile,
+    کد_پستی_مشتری AS postal_code,
+    `Seller` AS username,
+    datavisit,
+    upload_date,
+    isvisit as visited,
+    edit as edit
+FROM customer
+WHERE upload_date = (
+    SELECT MAX(upload_date) 
+    FROM customer
+);
