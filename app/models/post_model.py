@@ -30,4 +30,14 @@ class ProductCategory(BaseModel):
 class CRMCustomerDescription(BaseModel):
     customer_code: str 
     Description: str
+    is_customer_visit: bool       # آیا مشتری (فروشنده) خودش ویزیت/سرکشی می‌کند؟
+    is_owner_in_shop: bool        # آیا صاحب مغازه در مغازه هست؟
+    
+    
+    
+class Point(BaseModel):
+    customer_code: str | None =None
+    lat : float
+    lng : float
+
     

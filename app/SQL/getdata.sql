@@ -86,9 +86,11 @@ CREATE TABLE ProductCategoryCustomer(
 );
 
 
-CREATE TABLE CRMCustomerDescription(
+CREATE TABLE CRMCustomerDescription (
     customer_code INT NOT NULL,
-    description_Crm TEXT NOT NULL,
+    description_crm TEXT NOT NULL,
+    is_customer_visit TINYINT(1) DEFAULT 0,   -- آیا مشتری (فروشنده) خودش ویزیت/سرکشی می‌کند؟
+    is_owner_in_shop TINYINT(1) DEFAULT 0,    -- آیا صاحب مغازه در مغازه هست؟
     username VARCHAR(255),
     date_shamsi VARCHAR(20),
     date_miladi DATETIME
@@ -112,6 +114,21 @@ CREATE TABLE CustomerIditTabel (
     date_shamsi VARCHAR(20),
     date_miladi DATETIME
 )
+
+
+CREATE TABLE  Point_tbl (
+    customer_code INT,
+    lat FLOAT,
+    lng FLOAT,
+    username VARCHAR(200),
+    date_shamsi VARCHAR(20),
+    date_miladi DATETIME
+)
+
+ALTER TABLE Point_tbl 
+MODIFY lat DECIMAL(9,6),
+MODIFY lng DECIMAL(9,6);
+
 
 
 
