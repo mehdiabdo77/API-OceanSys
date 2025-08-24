@@ -7,12 +7,21 @@ from ..models.db_model import *
 
 # TODO باید از دیتا بیس بخونه و هش هم بکنه
 def getUserDB(
-     user
+     user: str
 ):
-     try:
-          df = pd.read_excel("db.xlsx")
-          row = df[df['user'] == user ].iloc[0]
-          row = row.to_dict()
-          return  row
-     except:
-          return None
+     with engine.connect() as conn:
+          try:
+               sql = text(
+                    """
+                         SELECT * from user_tbl WHERE username = :username
+                    """
+               )
+               result = conn.execute(sql, {"username": user})
+               row = result.mappings().fetchone()
+               if not row:
+                    return None
+               data = dict(row)
+               return data
+          except Exception:
+               return None
+

@@ -12,10 +12,10 @@ auth_router = APIRouter()
 @auth_router.post("/token")
 def login(form_data: OAuth2PasswordRequestForm = Depends()):
     user = getUserDB(form_data.username)
-    if not user or not verify_password(form_data.password, user['password']):
+    if not user or not verify_password(form_data.password, user['password_hash']):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     access_token = create_access_token(
-        data={"sub": user['user']},
+        data={"sub": user['username']},
         expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     )
     return {"access_token": access_token, "token_type": "bearer"}

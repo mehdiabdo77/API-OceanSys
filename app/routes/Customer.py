@@ -5,7 +5,7 @@ from app.auth.auth_handler import get_current_user
 from app.db.customer_repository import getCustomerInfo, sendDisActiveDescription , sendProductCategory , sendCRMCustomerDescription , update_customer_isvisit, save_customer_edit
 from app.models.response_model import CustomerModel
 from app.core.config import ACCESS_TOKEN_EXPIRE_MINUTES
-from app.models.post_model import CustomerEditModel, DisActiveDescription, ProductCategory , CRMCustomerDescription
+from app.models.post_model import CustomerEditModel, DisActiveDescription, ProductCategory , CRMCustomerDescription , TaskComplete
 
 
 customer_router = APIRouter()
@@ -86,4 +86,16 @@ def crmCustomerDescription ( data: CRMCustomerDescription , username: str = Depe
     if "error" in result:
         raise HTTPException(status_code=400, detail=result["error"])
     return result
+
+
+
+@customer_router.post("/task_complete")
+def task_complete ( data: TaskComplete , username: str = Depends(get_current_user)    ):
+    if username is None :
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    else:
+        visit_update = update_customer_isvisit(data.customer_code,1)
+    if "error" in visit_update:
+        raise HTTPException(status_code=400, detail=visit_update["error"])
+    return visit_update
 

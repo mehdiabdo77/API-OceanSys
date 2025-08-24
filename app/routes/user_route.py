@@ -12,3 +12,10 @@ user_router = APIRouter()
 def get_user_data(username: str = Depends(get_current_user)):
     user = getUserDB(username)
     return user
+
+
+@user_router.post("/register")
+def register_user(username: str = Depends(get_current_user)):
+    # TODO اینجا باید ساخت اکانت کاربری انجام بدی
+    # TODO فقط ادمین باید بتونه این درخواست بفرسته
+    return None

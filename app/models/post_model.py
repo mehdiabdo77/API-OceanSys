@@ -33,6 +33,9 @@ class CRMCustomerDescription(BaseModel):
     is_customer_visit: bool       # آیا مشتری (فروشنده) خودش ویزیت/سرکشی می‌کند؟
     is_owner_in_shop: bool        # آیا صاحب مغازه در مغازه هست؟
     
+# تموم شدن کار    
+class TaskComplete(BaseModel):
+    customer_code: str 
     
     
 class Point(BaseModel):

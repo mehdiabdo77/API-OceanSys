@@ -67,13 +67,14 @@ CREATE TABLE DisActiveDescription (
     Reason VARCHAR(255) NOT NULL,
     Description TEXT,
     PRIMARY KEY (customer_code)
+    username VARCHAR(255),
+    date_shamsi VARCHAR(20),
+    date_miladi DATETIME;
 );
 
 
-ALTER TABLE DisActiveDescription
-ADD COLUMN username VARCHAR(255),
-ADD COLUMN date_shamsi VARCHAR(20),
-ADD COLUMN date_miladi DATETIME;
+
+
 
 
 
@@ -118,22 +119,19 @@ CREATE TABLE CustomerIditTabel (
 
 CREATE TABLE  Point_tbl (
     customer_code INT,
-    lat FLOAT,
-    lng FLOAT,
+    lat DECIMAL(9,6),
+    lng DECIMAL(9,6),
     username VARCHAR(200),
     date_shamsi VARCHAR(20),
     date_miladi DATETIME
 )
 
-ALTER TABLE Point_tbl 
-MODIFY lat DECIMAL(9,6),
-MODIFY lng DECIMAL(9,6);
 
-
-
-
-
-
+CREATE TABLE  user_tbl (
+    username VARCHAR(200),
+    full_name VARCHAR(255),
+    password_hash VARCHAR(255)
+    )
 
 
 
@@ -169,3 +167,6 @@ WHERE upload_date = (
     SELECT MAX(upload_date) 
     FROM customer
 );
+
+
+SELECT * from user_tbl WHERE username = "mahdi"

@@ -14,8 +14,8 @@ class CustomerModel(BaseModel):
     area: str # محدودهغ
     zone: str # ناحیه
     route: str # مسیر
-    latitude: float 
-    longitude: float  
+    latitude: float | str | None = None
+    longitude: float  | str | None = None
     status: str
     address: str
     phone: str
