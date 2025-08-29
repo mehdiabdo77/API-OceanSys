@@ -127,11 +127,53 @@ CREATE TABLE  Point_tbl (
 )
 
 
-CREATE TABLE  user_tbl (
-    username VARCHAR(200),
-    full_name VARCHAR(255),
-    password_hash VARCHAR(255)
-    )
+CREATE TABLE department_tbl (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    description TEXT
+);
+
+CREATE TABLE position_tbl (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(100) NOT NULL UNIQUE,
+    level INT
+);
+
+CREATE TABLE user_tbl (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(200) UNIQUE NOT NULL,
+    full_name VARCHAR(255) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
+    department_id INT NOT NULL,
+    position_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_at_jalali VARCHAR(10) NOT NULL,
+    updated_at_jalali VARCHAR(10) NOT NULL,
+    
+    CONSTRAINT fk_department
+        FOREIGN KEY (department_id) 
+        REFERENCES department_tbl(id)
+        ON DELETE RESTRICT,
+    
+    CONSTRAINT fk_position
+        FOREIGN KEY (position_id) 
+        REFERENCES position_tbl(id)
+        ON DELETE RESTRICT
+);
+
+
+
+-- درج داده به جداول parent اول
+INSERT INTO department_tbl (name, description) VALUES 
+('برنامه ریزی', 'واحد برنامه ریزی ستاد ');
+
+
+INSERT INTO position_tbl (title, level) VALUES 
+('مدیر', 1),
+('کارشناس', 3),
+('سرپرست', 2);
 
 
 

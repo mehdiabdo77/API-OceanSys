@@ -42,5 +42,12 @@ class Point(BaseModel):
     customer_code: str | None =None
     lat : float
     lng : float
-
     
+    
+class User(BaseModel):
+    username: str 
+    fullName : str
+    password : str
+    isactive : bool
+    departmentID : int # (Foreign Key → Department.id)
+    positionID : int # (Foreign Key → Position.id) #TODO جدول باید طراحی کنی
