@@ -93,8 +93,8 @@ def sendCRMCustomerDescription(data: CRMCustomerDescription , username: str):
         date_shamsi = jdatetime.datetime.now().strftime('%Y/%m/%d')
         
         insert_sql = text("""
-            INSERT INTO CRMCustomerDescription (customer_code, description_crm, is_customer_visit, is_owner_in_shop, username, date_shamsi, date_miladi)
-            VALUES (:customer_code, :description_crm, :is_customer_visit, :is_owner_in_shop, :username, :date_shamsi, :date_miladi)
+            INSERT INTO CRMCustomerDescription (customer_code, description_crm, is_customer_visit, is_owner_in_shop, is_cooperation, username, date_shamsi, date_miladi)
+            VALUES (:customer_code, :description_crm, :is_customer_visit, :is_owner_in_shop,:is_cooperation, :username, :date_shamsi, :date_miladi)
         """)
         
         conn.execute(insert_sql, {
@@ -102,6 +102,7 @@ def sendCRMCustomerDescription(data: CRMCustomerDescription , username: str):
             "description_crm": data.Description,
             "is_customer_visit": data.is_customer_visit,
             "is_owner_in_shop": data.is_owner_in_shop,
+            "is_cooperation":data.is_cooperation,
             "username": username,
             "date_shamsi": date_shamsi,
             "date_miladi": date_miladi

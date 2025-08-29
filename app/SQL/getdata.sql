@@ -92,6 +92,7 @@ CREATE TABLE CRMCustomerDescription (
     description_crm TEXT NOT NULL,
     is_customer_visit TINYINT(1) DEFAULT 0,   -- آیا مشتری (فروشنده) خودش ویزیت/سرکشی می‌کند؟
     is_owner_in_shop TINYINT(1) DEFAULT 0,    -- آیا صاحب مغازه در مغازه هست؟
+    is_cooperation TINYINT(1) DEFAULT 1,      -- آیا با ما همکاری می‌کند؟ (1 = بله, 0 = خیر)
     username VARCHAR(255),
     date_shamsi VARCHAR(20),
     date_miladi DATETIME
