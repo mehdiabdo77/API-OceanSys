@@ -6,31 +6,62 @@ from datetime import datetime
 from app.models.post_model import DisActiveDescription , ProductCategory, CRMCustomerDescription, CustomerEditModel
 from ..models.db_model import *
 
-def getCustomerInfo(
-     user
-):   
-
+def getCustomerInfo(user):
     try:
-        # خواندن فایل اکسل
-        df = pd.read_sql(query_customergetinfo, engine)
-        
-        df = df[df['username'] == user ]
-        
-        # تبدیل NaN/None به مقدار قابل قبول برای JSON
-        cleaned_df = df.where(pd.notnull(df), " ")
-        
-        # تبدیل به دیکشنری
-        result = cleaned_df.to_dict("records")
-        return result        
-        
-    except FileNotFoundError:
-        print("Error: File 'coustumer.xlsx' not found")
-        return {"error": "File not found", "data": {}}
-        
+        with engine.connect() as conn:
+            query = text("""
+            SELECT
+                کد_مشتری AS customer_code,
+                نام_مشتری as customer_name,
+                تابلو_مشستری AS customer_board,
+                کد_ملی AS national_code,
+                محدوده AS "area",
+                ناحیه AS "zone",
+                مسیر AS "route",
+                Latitude AS latitude,
+                Longitude AS longitude,
+                وضعیت AS status,
+                آدرس_مشتری AS address,
+                تلفن_اول AS phone,
+                تلفن_همراه AS mobile,
+                کد_پستی_مشتری AS postal_code,
+                u.username AS username,
+                v.`visit_Date` as datavisit,
+                v.user_idit_data as upload_date,
+                v.visit_status as visited,
+                v.edit_status as edit
+            FROM visit_reports as v 
+            join customer as c on v.customer_id = c.کد_مشتری
+            join user_tbl as u on u.id = v.user_id
+            WHERE v.`visit_Date` = (
+                SELECT MAX(v.`visit_Date`) 
+                FROM customer
+            ) AND u.username = :username
+            """)
+            
+            result = conn.execute(query, {"username": user})
+            
+            # تبدیل نتیجه به لیست دیکشنری‌ها
+            records = []
+            for row in result:
+                record = {}
+                for column, value in row._mapping.items():
+                    # تبدیل None به رشته خالی
+                    if value is None:
+                        record[column] = " "
+                    # تبدیل Timestamp به رشته
+                    elif column == 'datavisit' and hasattr(value, 'strftime'):
+                        record[column] = value.strftime('%Y-%m-%d')
+                    # سایر مقادیر
+                    else:
+                        record[column] = value
+                records.append(record)
+                
+            return records
+            
     except Exception as e:
         print(f"Unexpected error: {str(e)}")
         return {"error": str(e), "data": {}}
-   
 
 def sendDisActiveDescription(data: DisActiveDescription , username: str):
     with engine.connect() as conn:
@@ -111,15 +142,15 @@ def sendCRMCustomerDescription(data: CRMCustomerDescription , username: str):
         return {"message": "CRM customer description saved successfully"}
         
         
-def update_customer_isvisit(customer_code: int , visit :int = 2):
+def update_customer_isvisit(customer_code: int , visit :int = 2 , edit:int = 0):
     with engine.connect() as conn:
         try:
             sql = text("""
-                UPDATE customer
-                SET isvisit = :visit
-                WHERE `کد_مشتری` = :customer_code
+                        UPDATE visit_reports
+                        SET visit_status = :visit  , edit_status =:edit
+                        WHERE customer_id = :customer_code
             """)
-            result = conn.execute(sql, {"customer_code": int(customer_code) , "visit" : visit})
+            result = conn.execute(sql, {"customer_code": int(customer_code) , "visit" : visit , "edit" : edit})
             conn.commit()
             if result.rowcount == 0:
                 return {"error": "Customer not found."}
@@ -171,6 +202,19 @@ def save_customer_edit(data: CustomerEditModel, username: str):
             return {"error": f"Failed to save customer edit: {str(e)}"}
         
         
-        
-
-        
+def update_customer_isedit(customer_code: int  , edit:int = 1):
+    with engine.connect() as conn:
+        try:
+            sql = text("""
+                        UPDATE visit_reports
+                        SET visit_status = edit_status =:edit
+                        WHERE customer_id = :customer_code
+            """)
+            result = conn.execute(sql, {"customer_code": int(customer_code) , "edit" : edit})
+            conn.commit()
+            if result.rowcount == 0:
+                return {"error": "Customer not found."}
+            return {"message": f"isedit updated to {visit}"}
+        except Exception as e:
+            return {"error": str(e)}
+             

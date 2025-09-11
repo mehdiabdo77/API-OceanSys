@@ -1,25 +1,14 @@
--- Active: 1753974425566@@127.0.0.1@3306@ocean
-SELECT
-    کد_مشتری AS customer_code,
-    نام_مشتری as customer_name,
-    تابلو_مشستری AS customer_board,
-    کد_ملی AS national_code,
-    محدوده AS "area",
-    ناحیه AS "zone",
-    مسیر AS "route",
-    Latitude AS latitude,
-    Longitude AS longitude,
-    وضعیت AS status,
-    آدرس_مشتری AS address,
-    تلفن_اول AS phone,
-    تلفن_همراه AS mobile,
-    کد_پستی_مشتری AS postal_code,
-    'mahdi' AS username,
-    "1404/04/05" as datavisit,
-    isvisit as visited,
-    0 as edit
-FROM customer
-LIMIT 10
+
+CREATE TABLE visit_reports (
+    id int AUTO_INCREMENT PRIMARY KEY,
+    customer_id int not NULL,
+    user_id int not NULL,
+    edit_status TINYINT(1) NOT NULL DEFAULT 0,
+    visit_status TINYINT(1) NOT NULL DEFAULT 0,
+    visit_Date DATETIME DEFAULT NULL,
+    user_idit_data DATETIME DEFAULT NULL,
+    server_idit_data DATETIME DEFAULT null on UPDATE CURRENT_TIMESTAMP
+)
 
 
 
@@ -200,16 +189,16 @@ SELECT
     تلفن_اول AS phone,
     تلفن_همراه AS mobile,
     کد_پستی_مشتری AS postal_code,
-    `Seller` AS username,
-    datavisit,
-    upload_date,
-    isvisit as visited,
-    edit as edit
-FROM customer
-WHERE upload_date = (
-    SELECT MAX(upload_date) 
+    u.username AS username,
+    v.`visit_Date`  as datavisit,
+    v.user_idit_data as upload_date,
+    v.visit_status as visited,
+    v.edit_status as edit
+FROM visit_reports as v 
+join customer as c on v.customer_id = c.کد_مشتری
+join user_tbl as u on u.id = v.user_id
+WHERE v.`visit_Date` = (
+    SELECT MAX(v.`visit_Date`) 
     FROM customer
 );
 
-
-SELECT * from user_tbl WHERE username = "mahdi"

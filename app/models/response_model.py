@@ -22,7 +22,7 @@ class CustomerModel(BaseModel):
     mobile: str | None
     postal_code: str | None
     username: str
-    datavisit : str
+    datavisit : Optional[str] = None
     visited : int
     edit : int
 

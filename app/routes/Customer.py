@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from typing import List
 from fastapi import APIRouter, Depends
 from app.auth.auth_handler import get_current_user
-from app.db.customer_repository import getCustomerInfo, sendDisActiveDescription , sendProductCategory , sendCRMCustomerDescription , update_customer_isvisit, save_customer_edit
+from app.db.customer_repository import getCustomerInfo, sendDisActiveDescription , sendProductCategory , sendCRMCustomerDescription , update_customer_isvisit, save_customer_edit , update_customer_isedit
 from app.models.response_model import CustomerModel
 from app.core.config import ACCESS_TOKEN_EXPIRE_MINUTES
 from app.models.post_model import CustomerEditModel, DisActiveDescription, ProductCategory , CRMCustomerDescription , TaskComplete
@@ -25,8 +25,9 @@ def get_customer_data(username: str = Depends(get_current_user) , ):
 
 
 
+# TODO 
 @customer_router.post("/editcoustomerinfo")
-def editCustomerData( update_data: CustomerEditModel  , username: str = Depends(get_current_user)    ):
+def editCustomerData( update_data: CustomerEditModel  , username: str = Depends(get_current_user)):
     if username == None :
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
@@ -38,6 +39,7 @@ def editCustomerData( update_data: CustomerEditModel  , username: str = Depends(
     
     # به‌روزرسانی وضعیت بازدید مشتری
     visit_update = update_customer_isvisit(update_data.customer_code)
+    edit_update = update_customer_isedit(update_data.customer_code)
     if "error" in visit_update:
         raise HTTPException(status_code=400, detail=visit_update["error"])
     

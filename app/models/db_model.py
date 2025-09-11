@@ -15,32 +15,3 @@ connection_string = f"mysql+pymysql://{db_config['user']}:{db_config['password']
 
 
 engine = create_engine(connection_string)
-
-
-query_customergetinfo = """
-SELECT
-    کد_مشتری AS customer_code,
-    نام_مشتری as customer_name,
-    تابلو_مشستری AS customer_board,
-    کد_ملی AS national_code,
-    محدوده AS "area",
-    ناحیه AS "zone",
-    مسیر AS "route",
-    Latitude AS latitude,
-    Longitude AS longitude,
-    وضعیت AS status,
-    آدرس_مشتری AS address,
-    تلفن_اول AS phone,
-    تلفن_همراه AS mobile,
-    کد_پستی_مشتری AS postal_code,
-    `Seller` AS username,
-    datavisit,
-    upload_date,
-    isvisit as visited,
-    edit as edit
-FROM customer
-WHERE upload_date = (
-    SELECT MAX(upload_date) 
-    FROM customer
-);
-"""
