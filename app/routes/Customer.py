@@ -39,13 +39,21 @@ def editCustomerData( update_data: CustomerEditModel  , username: str = Depends(
     
     # به‌روزرسانی وضعیت بازدید مشتری
     visit_update = update_customer_isvisit(update_data.customer_code)
+    print( visit_update)
     edit_update = update_customer_isedit(update_data.customer_code)
+    print(edit_update)
+    error = []
     if "error" in visit_update:
-        raise HTTPException(status_code=400, detail=visit_update["error"])
-    
+        error.append(visit_update["error"])
+    if "error" in edit_update:
+        error.append(edit_update["error"])
+    if error:
+        print(error)
+        raise HTTPException(status_code=400, detail=" ".join(error))
     return {
         "message": result.get("message"), 
-        "visit": visit_update.get("message")
+        "visit": visit_update.get("message"),
+        "edit": edit_update.get("message")
     }
     
 @customer_router.post("/disActiveCustomer")

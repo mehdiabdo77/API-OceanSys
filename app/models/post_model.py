@@ -52,3 +52,9 @@ class User(BaseModel):
     isactive : bool
     departmentID : int # (Foreign Key → Department.id)
     positionID : int # (Foreign Key → Position.id) #TODO جدول باید طراحی کنی
+    
+ 
+class RouteUpdate(BaseModel):
+    route_id: str
+    username: int 
+    visit_Date: str

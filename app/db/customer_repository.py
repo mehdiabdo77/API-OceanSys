@@ -142,15 +142,15 @@ def sendCRMCustomerDescription(data: CRMCustomerDescription , username: str):
         return {"message": "CRM customer description saved successfully"}
         
         
-def update_customer_isvisit(customer_code: int , visit :int = 2 , edit:int = 0):
+def update_customer_isvisit(customer_code: int , visit :int = 2):
     with engine.connect() as conn:
         try:
             sql = text("""
                         UPDATE visit_reports
-                        SET visit_status = :visit  , edit_status =:edit
+                        SET visit_status = :visit  
                         WHERE customer_id = :customer_code
             """)
-            result = conn.execute(sql, {"customer_code": int(customer_code) , "visit" : visit , "edit" : edit})
+            result = conn.execute(sql, {"customer_code": int(customer_code) , "visit" : visit })
             conn.commit()
             if result.rowcount == 0:
                 return {"error": "Customer not found."}
@@ -207,14 +207,14 @@ def update_customer_isedit(customer_code: int  , edit:int = 1):
         try:
             sql = text("""
                         UPDATE visit_reports
-                        SET visit_status = edit_status =:edit
+                        SET edit_status =:edit
                         WHERE customer_id = :customer_code
             """)
             result = conn.execute(sql, {"customer_code": int(customer_code) , "edit" : edit})
             conn.commit()
             if result.rowcount == 0:
                 return {"error": "Customer not found."}
-            return {"message": f"isedit updated to {visit}"}
+            return {"message": f"isedit updated to {edit}"}
         except Exception as e:
             return {"error": str(e)}
              

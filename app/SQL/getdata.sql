@@ -202,3 +202,22 @@ WHERE v.`visit_Date` = (
     FROM customer
 );
 
+
+INSERT INTO visit_reports(customer_id ,user_id , `visit_Date` )
+SELECT کد_مشتری, u.user_id , '2025/9/11'
+FROM customer c
+CROSS JOIN user_tbl as u
+WHERE مسیر = '11' AND u.username="m.abdollahi"
+
+INSERT INTO visit_reports (customer_id, user_id, visit_Date)
+SELECT c.کد_مشتری, u.id, '2025-09-11'
+FROM customer c
+CROSS JOIN user_tbl u
+WHERE c.مسیر = '11'
+AND u.username = "m.abdollahi";
+
+
+SELECT DISTINCT مسیر as route_id, COUNT(کد_مشتری) as customer_count 
+FROM customer
+GROUP BY مسیر
+ORDER BY مسیر
