@@ -3,10 +3,8 @@ from typing import List
 from fastapi import APIRouter, Depends
 from app.auth.auth_handler import get_current_user
 from app.db.customer_repository import getCustomerInfo, sendDisActiveDescription , sendProductCategory , sendCRMCustomerDescription , update_customer_isvisit, save_customer_edit , update_customer_isedit
-from app.models.response_model import CustomerModel
+from app.models.customer_model import CustomerModel , CustomerEditModel, DisActiveDescription, ProductCategory , CRMCustomerDescription , TaskComplete
 from app.core.config import ACCESS_TOKEN_EXPIRE_MINUTES
-from app.models.post_model import CustomerEditModel, DisActiveDescription, ProductCategory , CRMCustomerDescription , TaskComplete
-
 
 customer_router = APIRouter()
 

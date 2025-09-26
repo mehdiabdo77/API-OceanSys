@@ -3,8 +3,8 @@ from sqlalchemy import text
 import jdatetime
 from datetime import datetime
 from ..models.db_model import *
-from app.models.post_model import User
-from app.utils.password import hash_password
+from app.models.user_model import User
+from app.utils.security import hash_password
 
 
 

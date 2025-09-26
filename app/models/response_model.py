@@ -6,25 +6,6 @@ class UserModel(BaseModel):
     user: str
     position: str
     
-class CustomerModel(BaseModel):
-    customer_code: int 
-    customer_name: str| None
-    customer_board: str| None
-    national_code: str
-    area: str # محدودهغ
-    zone: str # ناحیه
-    route: str # مسیر
-    latitude: float | str | None = None
-    longitude: float  | str | None = None
-    status: str
-    address: str
-    phone: str
-    mobile: str | None
-    postal_code: str | None
-    username: str
-    datavisit : Optional[str] = None
-    visited : int
-    edit : int
 
 class VisitCreate(BaseModel):
     customer_code: int
