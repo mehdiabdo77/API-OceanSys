@@ -2,7 +2,13 @@ from cProfile import label
 from unittest import result
 from sqlalchemy import text
 from datetime import datetime
-from ..models.db_model import engine , Customer, User, VisitReport, SessionLocal
+from ..models.base import  SessionLocal , relationship
+from ..models.customer_model import Customer
+from ..models.visit_report import VisitReport
+from ..models.user_model import User
+
+
+
 
 def get_routes(): 
      try:

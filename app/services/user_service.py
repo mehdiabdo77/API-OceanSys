@@ -2,8 +2,8 @@ import pandas as pd
 from sqlalchemy import text
 import jdatetime
 from datetime import datetime
-from ..models.db_model import *
-from app.models.user_model import User
+from ..models.base import *
+from app.schemas.user_schemas import User
 from app.utils.security import hash_password
 
 

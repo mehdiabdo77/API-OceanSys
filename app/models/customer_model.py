@@ -1,58 +1,23 @@
-from pydantic import BaseModel
-from typing import Optional
+from sqlalchemy import Column, Integer, String, Text, DECIMAL
+from sqlalchemy.orm import relationship
+from app.models.base import Base
+# TODO اسم ستون ها دیتا بیس از فارسی به اینگلیسی تغییر بده تو اینده
+class Customer(Base):
+    __tablename__ = "customer"
 
-class CustomerEditModel(BaseModel):
-    customer_code: int
-    nationalCode: str | None = None
-    roleCode: int | None = None
-    postalCode: str | None = None
-    customerboard: str | None = None  # customer_board در جدول
-    custumername: str | None = None   # customer_name در جدول
-    address: str | None = None
-    mobileNumber: str | None = None   # mobile_number در جدول
-    mobileNumber2: str | None = None  # mobile_number2 در جدول
-    phoneNumber: str | None = None    # phone_number در جدول
-    storeArea: int | None = None      # store_area در جدول
+    کد_مشتری = Column(Integer, primary_key=True)
+    نام_مشتری = Column(String(255), nullable=True)
+    تابلو_مشستری = Column(String(255), nullable=True)
+    کد_ملی = Column(String(20), nullable=True)
+    محدوده = Column(String(100), nullable=True)
+    ناحیه = Column(String(100), nullable=True)
+    مسیر = Column(String(100), nullable=True)
+    Latitude = Column(DECIMAL(9, 6), nullable=True)
+    Longitude = Column(DECIMAL(9, 6), nullable=True)
+    وضعیت = Column(String(50), nullable=True)
+    آدرس_مشتری = Column(Text, nullable=True)
+    تلفن_اول = Column(String(20), nullable=True)
+    تلفن_همراه = Column(String(20), nullable=True)
+    کد_پستی_مشتری = Column(String(20), nullable=True)
 
-class DisActiveDescription(BaseModel):
-    customer_code: str 
-    Reason: str
-    Description: str
-    
-class ProductCategory(BaseModel):
-    customer_code: str 
-    sku: list;
-    
-    
-class CRMCustomerDescription(BaseModel):
-    customer_code: str 
-    Description: str
-    is_customer_visit: bool       # آیا مشتری (فروشنده) خودش ویزیت/سرکشی می‌کند؟
-    is_owner_in_shop: bool        # آیا صاحب مغازه در مغازه هست؟
-    is_cooperation: bool
-    
-# تموم شدن کار    
-class TaskComplete(BaseModel):
-    customer_code: str 
-    
-
-# TODO  باید این مدل اصلاح بشه و توش چیز اضافی نباشه
-class CustomerModel(BaseModel):
-    customer_code: int 
-    customer_name: str| None
-    customer_board: str| None
-    national_code: str
-    area: str # محدودهغ
-    zone: str # ناحیه
-    route: str # مسیر
-    latitude: float | str | None = None
-    longitude: float  | str | None = None
-    status: str
-    address: str
-    phone: str
-    mobile: str | None
-    postal_code: str | None
-    username: str
-    datavisit : Optional[str] = None
-    visited : int
-    edit : int
+    visit_reports = relationship("VisitReport", back_populates="customer")

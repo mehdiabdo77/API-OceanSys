@@ -1,10 +1,9 @@
 from token import RIGHTSHIFT
 from app.auth.auth_handler import get_current_user
-from app.models import response_model
-from app.models.post_model import RouteUpdate
+from app.schemas.post_schemas import RouteUpdate
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List, Dict
-from app.db.route_repository import get_routes , add_user_route
+from app.services.route_service import get_routes , add_user_route
 
 visit_router = APIRouter()
 

@@ -3,8 +3,8 @@ from sqlalchemy import text
 import jdatetime
 from datetime import datetime
 
-from app.models.customer_model import DisActiveDescription , ProductCategory, CRMCustomerDescription, CustomerEditModel
-from ..models.db_model import *
+from app.schemas.customer_schemas import DisActiveDescription , ProductCategory, CRMCustomerDescription, CustomerEditModel
+from ..models.base import *
 
 def getCustomerInfo(user):
     try:

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
 from app.auth.auth_handler import create_access_token
-from app.db.user_repository import getUserDB
+from app.services.user_service import getUserDB
 from app.utils.security import verify_password
 from app.core.config import ACCESS_TOKEN_EXPIRE_MINUTES
 

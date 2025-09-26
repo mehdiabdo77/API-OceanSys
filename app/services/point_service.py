@@ -1,8 +1,8 @@
-from ..models.db_model import *
+from ..models.base import *
 from sqlalchemy import text
 import jdatetime
 from datetime import datetime
-from app.models.post_model import Point
+from app.schemas.post_schemas import Point
 
 def save_point(data: Point, username: str):
     with engine.connect() as conn:

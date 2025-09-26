@@ -5,22 +5,37 @@ This project is a FastAPI application that provides user authentication and mana
 ## Project Structure
 
 ```
-fastapi-app
+OceanSys-API
 ├── app
-│   ├── main.py                # Entry point of the FastAPI application
-│   ├── models
-│   │   └── user.py            # Defines the UserModel class
-│   ├── routes
-│   │   └── auth.py            # Contains authentication routes
-│   ├── services
-│   │   └── auth_service.py     # Business logic for authentication
-│   ├── utils
-│   │   └── jwt_utils.py       # Utility functions for JWT handling
-│   └── db
-│       └── __init__.py        # Initializes the database module
-├── requirements.txt            # Lists project dependencies
-└── README.md                   # Documentation for the project
-```
+│   ├── auth
+│   │   └── auth_handler.py       # مدیریت احراز هویت و توکن‌ها
+│   ├── core
+│   │   └── config.py             # تنظیمات اصلی پروژه
+│   ├── models                    # مدل‌های SQLAlchemy (ORM)
+│   │   ├── base.py               # تنظیمات پایه SQLAlchemy
+│   │   ├── customer_model.py     # مدل مشتری
+│   │   ├── user_model.py         # مدل کاربر
+│   │   └── visit_report.py       # مدل گزارش بازدید
+│   ├── routes                    # مسیرهای API
+│   │   ├── Customer.py           # مسیرهای مربوط به مشتری
+│   │   ├── auth_router.py        # مسیرهای احراز هویت
+│   │   ├── point.py              # مسیرهای مربوط به نقاط
+│   │   ├── user_route.py         # مسیرهای مربوط به کاربر
+│   │   └── visit.py              # مسیرهای مربوط به بازدید
+│   ├── schemas                   # طرح‌های Pydantic برای  
+│   │   ├── customer_schemas.py   # طرح‌های مربوط به مشتری
+│   │   ├── post_schemas.py       # طرح‌های مربوط به پست‌ها
+│   │   ├── response_schemas.py   # طرح‌های مربوط به پاسخ‌ها
+│   │   └── user_schemas.py       # طرح‌های مربوط به کاربر
+│   ├── services                  # منطق تجاری
+│   │   ├── customer_service.py   # سرویس مشتری
+│   │   ├── point_service.py      # سرویس نقاط
+│   │   ├── route_service.py      # سرویس مسیرها
+│   │   └── user_service.py       # سرویس کاربر
+│   └── utils
+│       └── security.py           # توابع امنیتی
+├── main.py                       # نقطه ورود برنامه
+└── requirements.txt              # وابستگی‌های پروژه
 
 ## Setup Instructions
 

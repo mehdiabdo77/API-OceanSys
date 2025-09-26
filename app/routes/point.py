@@ -1,7 +1,7 @@
 from fastapi import APIRouter , HTTPException , Depends
-from app.models.post_model import Point
+from app.schemas.post_schemas import Point
 from app.auth.auth_handler import get_current_user
-from app.db.point_repository import save_point
+from app.services.point_service import save_point
 
 
 point_router = APIRouter()

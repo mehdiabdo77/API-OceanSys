@@ -4,7 +4,7 @@ from jose import JWTError, jwt
 from fastapi import Depends, HTTPException
 from app.core.config import ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, ALGORITHM
 from app.utils.security import verify_password
-from app.db.user_repository import getUserDB
+from app.services.user_service import getUserDB
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
