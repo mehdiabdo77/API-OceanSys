@@ -36,6 +36,7 @@ class TaskComplete(BaseModel):
     customer_code: str 
     
 
+# TODO  باید این مدل اصلاح بشه و توش چیز اضافی نباشه
 class CustomerModel(BaseModel):
     customer_code: int 
     customer_name: str| None

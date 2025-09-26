@@ -1,40 +1,45 @@
+from cProfile import label
 from unittest import result
 from sqlalchemy import text
 from datetime import datetime
-from ..models.db_model import engine
+from ..models.db_model import engine , Customer, User, VisitReport, SessionLocal
 
 def get_routes(): 
      try:
-          with engine.connect() as conn:
-               query= text("""
-                              SELECT DISTINCT مسیر as route_id, COUNT(کد_مشتری) as customer_count
-                              FROM customer
-                              GROUP BY مسیر
-                              ORDER BY مسیر
-                         """)
-               result = conn.execute(query)
-               print(result)
-               routes =[]
-               for row in result:
-                    routes.append(row.route_id,)
-               return routes
+          db = SessionLocal()
+          routes_query = (db.query(Customer.مسیر.label("route_id"),
+                                   func.count(Customer.کد_مشتری),
+                                   label("customer_count"))
+                          .group_by(Customer.مسیر)
+                          .order_by(Customer.مسیر).all())
+          routes = [route.route_id for route in routes_query]
+          return routes
      except Exception as e:
           print(f"خطا در دریافت مسیرها: {str(e)}")
           return {"error": str(e) , 'success':False}
+     finally:
+          db.close()
 
-def add_user_route(route_id , username , datetime):
+# TODO لتفا محدوده هم بهش اضافه کن 
+def add_user_route(route_id , username , datetime_val):
      try:
-          with engine.connect() as conn:
-               query = text("""
-                            INSERT INTO visit_reports (customer_id, user_id, visit_Date)
-                              SELECT c.کد_مشتری, u.id, :datetime
-                              FROM customer c
-                              CROSS JOIN user_tbl u
-                              WHERE c.مسیر = :route_id
-                              AND u.username = :username;
-                            """)
-               conn.execute(query,{"route_id":route_id , "username":username , "datetime":datetime})
-               return {"success": True}
+          db = SessionLocal()
+          user = db.query(User).filter(User.username == username).first()
+          if not user:
+               return {"error": "کاربر یافت نشد", 'success': False}
+          customers = db.query(Customer).filter(Customer.مسیر == route_id).all()
+          if not customers:
+               return {"error": "هیچ مشتری در این مسیر یافت نشد", 'success': False}
+          
+          for customer in  customers:
+               visit_reports = VisitReport(customer_id= customer.کد_مشتری,
+                                           user_id= user.id ,
+                                           visit_Date =datetime_val )
+               db.add(visit_reports)  
+          db.commit()  
+          return {"success": True}
      except Exception as e:
           print(f"خطا در افزودن مسیر: {str(e)}")
           return {"error": str(e) , 'success':False}
+     finally:
+          db.close()
