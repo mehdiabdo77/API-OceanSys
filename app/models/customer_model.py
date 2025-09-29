@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, Text, DECIMAL
 from sqlalchemy.orm import relationship
 from app.models.base import Base
 # TODO اسم ستون ها دیتا بیس از فارسی به اینگلیسی تغییر بده تو اینده
-class Customer(Base):
+class CustomerModel(Base):
     __tablename__ = "customer"
 
     کد_مشتری = Column(Integer, primary_key=True)

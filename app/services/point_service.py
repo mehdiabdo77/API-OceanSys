@@ -1,33 +1,26 @@
-from ..models.base import *
-from sqlalchemy import text
+from app.models.point_model import PointModel
+from ..models.base import SessionLocal, engine
 import jdatetime
 from datetime import datetime
 from app.schemas.post_schemas import Point
 
 def save_point(data: Point, username: str):
+    db = None
     with engine.connect() as conn:
         try:
+            db = SessionLocal()
             date_miladi = datetime.now()
             date_shamsi = jdatetime.datetime.now().strftime('%Y/%m/%d')
             
-            sql = text("""
-                INSERT INTO Point_tbl (
-                    customer_code, lat , lng , username, date_shamsi, date_miladi
-
-                ) VALUES (
-                    :customer_code, :lat, :lng,
-                    :username, :date_shamsi, :date_miladi
-                )
-            """)
-            
-            conn.execute(sql, {
-                "customer_code": data.customer_code,
-                "lat": data.lat,
-                "lng": data.lng,
-                "username": username,
-                "date_shamsi": date_shamsi,
-                "date_miladi": date_miladi
-            })
+            point_record  = PointModel(
+                customer_code = data.customer_code,
+                lat = data.lat,
+                lng = data.lng,
+                username = username,
+                date_shamsi = date_shamsi,
+                date_miladi = date_miladi
+            )
+            db.add(point_record)
             
             conn.commit()
             return {"message": "Point saved successfully"}
@@ -35,5 +28,8 @@ def save_point(data: Point, username: str):
         except Exception as e:
             print(f"Database error in save_point: {e}")
             return {"error": f"Failed to save point: {str(e)}"}
+        finally:
+            if db is not None:
+                db.close()
         
    

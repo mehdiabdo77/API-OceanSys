@@ -10,9 +10,7 @@ db_config = {
     'port': 3306        
 }
 
-connection_string = f"mysql+pymysql://{db_config['user']}:{db_config
-                    ['password']}@{db_config['host']}:{db_config
-                    ['port']}/{db_config['database']}"
+connection_string = f"mysql+pymysql://{db_config['user']}:{db_config['password']}@{db_config['host']}:{db_config['port']}/{db_config['database']}"
                     
 engine = create_engine(connection_string)
 Base = declarative_base()

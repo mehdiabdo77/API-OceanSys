@@ -14,5 +14,5 @@ class VisitReport(Base):
     user_idit_data = Column(DateTime, nullable=True)
     server_idit_data = Column(DateTime, nullable=True, onupdate=func.now())
 
-    customer = relationship("Customer", back_populates="visit_reports")
+    customer = relationship("CustomerModel", back_populates="visit_reports")
     user = relationship("User", back_populates="visit_reports")
