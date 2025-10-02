@@ -10,6 +10,7 @@ auth_router = APIRouter()
 
 @auth_router.post("/token")
 def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    print(form_data.username)
     user = getUserDB(form_data.username)
     print(user)
     if not user or not verify_password(form_data.password, user['password_hash']):

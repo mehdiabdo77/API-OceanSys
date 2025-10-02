@@ -5,7 +5,7 @@ from datetime import datetime
 from ..models.base import  SessionLocal , relationship
 from ..models.customer_model import CustomerModel
 from ..models.visit_report import VisitReport
-from ..models.user_model import User
+from ..models.user_model import UserModel
 
 
 
@@ -32,7 +32,7 @@ def add_user_route(route_id , username , datetime_val):
      db = None
      try:
           db = SessionLocal()
-          user = db.query(User).filter(User.username == username).first()
+          user = db.query(UserModel).filter(UserModel.username == username).first()
           if not user:
                return {"error": "کاربر یافت نشد", 'success': False}
           customers = db.query(CustomerModel).filter(CustomerModel.مسیر == route_id).all()

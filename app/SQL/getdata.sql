@@ -221,3 +221,5 @@ SELECT DISTINCT مسیر as route_id, COUNT(کد_مشتری) as customer_count
 FROM customer
 GROUP BY مسیر
 ORDER BY مسیر
+
+SELECT * FROM user_tbl WHERE user_tbl.username = 'm.abdollahi' LIMIT 1;

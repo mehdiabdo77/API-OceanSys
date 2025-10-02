@@ -22,5 +22,4 @@ def register_user(data: User, username: str = Depends(get_current_user)):
         result = saveUserDB(data)
         return result
     else :
-        raise HTTPException(status_code=400, detail=visit_update["error"])
-        
+        raise HTTPException(status_code=400, detail="You are not authorized to register users")
