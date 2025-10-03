@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, DATETIME, DECIMAL
 from sqlalchemy.orm import relationship
-from app.models.base import Base
+from app.core.base import Base
 
 
 class PointModel(Base):

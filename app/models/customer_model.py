@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Text, DECIMAL
 from sqlalchemy.orm import relationship
-from app.models.base import Base
+from app.core.base import Base
 # TODO اسم ستون ها دیتا بیس از فارسی به اینگلیسی تغییر بده تو اینده
 class CustomerModel(Base):
     __tablename__ = "customer"

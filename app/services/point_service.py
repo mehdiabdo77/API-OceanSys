@@ -1,5 +1,5 @@
 from app.models.point_model import PointModel
-from ..models.base import SessionLocal, engine
+from ..core.base import SessionLocal, engine
 import jdatetime
 from datetime import datetime
 from app.schemas.post_schemas import Point

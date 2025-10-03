@@ -1,7 +1,7 @@
 from sqlalchemy import func
-from ..models.base import  SessionLocal
+from ..core.base import  SessionLocal
 from ..models.customer_model import CustomerModel
-from ..models.customer_analysis.visit_report import VisitReport
+from ..models.customer_analysis.visit_report import VisitReportModel
 from ..models.user_model import UserModel
 
 def get_routes(): 
@@ -34,7 +34,7 @@ def add_user_route(route_id , username , datetime_val):
                return {"error": "هیچ مشتری در این مسیر یافت نشد", 'success': False}
           
           for customer in  customers:
-               visit_reports = VisitReport(customer_id= customer.کد_مشتری,
+               visit_reports = VisitReportModel(customer_id= customer.کد_مشتری,
                                            user_id= user.id ,
                                            visit_Date =datetime_val )
                db.add(visit_reports)  

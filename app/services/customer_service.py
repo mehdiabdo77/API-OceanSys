@@ -9,7 +9,7 @@ from app.models.customer_analysis.product_category_customer import ProductCatego
 from app.models.user_model import UserModel
 from app.models.customer_analysis.visit_report import VisitReportModel
 from app.schemas.customer_schemas import CustomerEdit, DisActiveDescription , ProductCategory, CRMCustomerDescription
-from ..models.base import SessionLocal, engine
+from ..core.base import SessionLocal, engine
 
 def getCustomerInfo(user):
     db = None

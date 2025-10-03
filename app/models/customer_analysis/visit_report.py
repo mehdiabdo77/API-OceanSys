@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, Boolean, DateTime, ForeignKey, func
 from sqlalchemy.orm import relationship
-from app.models.base import Base
+from app.core.base import Base
 
 class VisitReportModel(Base):
     __tablename__ = "visit_reports"

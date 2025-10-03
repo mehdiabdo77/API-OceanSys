@@ -2,7 +2,7 @@ from shelve import DbfilenameShelf
 import pandas as pd
 from sqlalchemy import text, true
 import jdatetime
-from ..models.base import *
+from ..core.base import *
 from app.schemas.user_schemas import User
 from app.models.user_model import UserModel
 from app.utils.security import hash_password

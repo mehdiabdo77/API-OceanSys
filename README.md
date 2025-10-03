@@ -1,8 +1,13 @@
-# FastAPI Application
 
-This project is a FastAPI application that provides user authentication and management features. It utilizes JWT for token-based authentication and is structured to separate concerns into different modules.
+# FastAPI Application
 
-## Project Structure
+This project is a FastAPI application that provides 
+user authentication and management features. It 
+utilizes JWT for token-based authentication and is 
+structured to separate concerns into different 
+modules.
+
+## Project Structure
 
 ```
 OceanSys-API
@@ -10,20 +15,26 @@ OceanSys-API
 │   ├── auth
 │   │   └── auth_handler.py       # مدیریت احراز هویت و توکن‌ها
 │   ├── core
+│   │   ├── base.py               # تنظیمات پایه
 │   │   └── config.py             # تنظیمات اصلی پروژه
 │   ├── models                    # مدل‌های SQLAlchemy (ORM)
+│   │   ├── customer_analysis     # تحلیل‌های مربوط به مشتری
+│   │   │   ├── CRM_customer_description.py  # توضیحات CRM مشتری
+│   │   │   ├── Customer_Idit.py             # ویرایش اطلاعات مشتری
+│   │   │   ├── disactive_description_model.py  # توضیحات غیرفعال‌سازی
+│   │   │   ├── product_category_customer.py    # دسته‌بندی محصولات مشتری
+│   │   │   └── visit_report.py               # گزارش بازدید
 │   │   ├── base.py               # تنظیمات پایه SQLAlchemy
 │   │   ├── customer_model.py     # مدل مشتری
-│   │   ├── user_model.py         # مدل کاربر
-│   │   └── visit_report.py       # مدل گزارش بازدید
+│   │   ├── point_model.py        # مدل نقاط
+│   │   └── user_model.py         # مدل کاربر
 │   ├── routes                    # مسیرهای API
 │   │   ├── Customer.py           # مسیرهای مربوط به مشتری
 │   │   ├── auth_router.py        # مسیرهای احراز هویت
 │   │   ├── point.py              # مسیرهای مربوط به نقاط
 │   │   ├── user_route.py         # مسیرهای مربوط به کاربر
 │   │   └── visit.py              # مسیرهای مربوط به بازدید
-│   ├── schemas                   # طرح‌های Pydantic برای  
-│   │   ├── customer_schemas.py   # طرح‌های مربوط به مشتری
+│   ├── schemas                   # طرح‌های Pydantic برای │   │   ├── customer_schemas.py   # طرح‌های مربوط به مشتری
 │   │   ├── post_schemas.py       # طرح‌های مربوط به پست‌ها
 │   │   ├── response_schemas.py   # طرح‌های مربوط به پاسخ‌ها
 │   │   └── user_schemas.py       # طرح‌های مربوط به کاربر
@@ -35,7 +46,7 @@ OceanSys-API
 │   └── utils
 │       └── security.py           # توابع امنیتی
 ├── main.py                       # نقطه ورود برنامه
-└── requirements.txt              # وابستگی‌های پروژه
+└──
 
 ## Setup Instructions
 
