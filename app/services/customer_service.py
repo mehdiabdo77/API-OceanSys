@@ -1,220 +1,244 @@
-import pandas as pd
-from sqlalchemy import text
+from sqlalchemy import desc, func, text
 import jdatetime
 from datetime import datetime
-
-from app.schemas.customer_schemas import DisActiveDescription , ProductCategory, CRMCustomerDescription, CustomerEditModel
-from ..models.base import *
+from app.models.customer_analysis.CRM_customer_description import CRMCustomerDescriptionModel
+from app.models.customer_model import CustomerModel
+from app.models.customer_analysis.disactive_description_model import DisActiveDescriptionModel
+from app.models.customer_analysis.Customer_Idit import CustomerIditModel
+from app.models.customer_analysis.product_category_customer import ProductCategoryCustomerModel
+from app.models.user_model import UserModel
+from app.models.customer_analysis.visit_report import VisitReportModel
+from app.schemas.customer_schemas import CustomerEdit, DisActiveDescription , ProductCategory, CRMCustomerDescription
+from ..models.base import SessionLocal, engine
 
 def getCustomerInfo(user):
+    db = None
     try:
-        with engine.connect() as conn:
-            query = text("""
-            SELECT
-                کد_مشتری AS customer_code,
-                نام_مشتری as customer_name,
-                تابلو_مشستری AS customer_board,
-                کد_ملی AS national_code,
-                محدوده AS "area",
-                ناحیه AS "zone",
-                مسیر AS "route",
-                Latitude AS latitude,
-                Longitude AS longitude,
-                وضعیت AS status,
-                آدرس_مشتری AS address,
-                تلفن_اول AS phone,
-                تلفن_همراه AS mobile,
-                کد_پستی_مشتری AS postal_code,
-                u.username AS username,
-                v.`visit_Date` as datavisit,
-                v.user_idit_data as upload_date,
-                v.visit_status as visited,
-                v.edit_status as edit
-            FROM visit_reports as v 
-            join customer as c on v.customer_id = c.کد_مشتری
-            join user_tbl as u on u.id = v.user_id
-            WHERE v.`visit_Date` = (
-                SELECT MAX(v.`visit_Date`) 
-                FROM customer
-            ) AND u.username = :username
-            """)
-            
-            result = conn.execute(query, {"username": user})
-            
+        db = SessionLocal()
+        subquery = db.query(func.max(VisitReportModel.visit_Date)).scalar()
+        query = (
+            db.query(
+                CustomerModel.کد_مشتری.label("customer_code"),
+                CustomerModel.نام_مشتری.label("customer_name"),
+                CustomerModel.تابلو_مشستری.label("customer_board"),
+                CustomerModel.کد_ملی.label("national_code"),
+                CustomerModel.محدوده.label("area"),
+                CustomerModel.ناحیه.label("zone"),
+                CustomerModel.مسیر.label("route"),
+                CustomerModel.Latitude.label("latitude"),
+                CustomerModel.Longitude.label("longitude"),
+                CustomerModel.وضعیت.label("status"),
+                CustomerModel.آدرس_مشتری.label("address"),
+                CustomerModel.تلفن_اول.label("phone"),
+                CustomerModel.تلفن_همراه.label("mobile"),
+                CustomerModel.کد_پستی_مشتری.label("postal_code"),
+                UserModel.username.label("username"),
+                VisitReportModel.visit_Date.label("datavisit"),
+                VisitReportModel.user_idit_data.label("upload_date"),
+                VisitReportModel.visit_status.label("visited"),
+                VisitReportModel.edit_status.label("edit")
+            ).join(VisitReportModel , VisitReportModel.customer_id== CustomerModel.کد_مشتری))\
+                .join(UserModel , UserModel.id == VisitReportModel.user_id)\
+                .filter(VisitReportModel.visit_Date == subquery)\
+                .filter(UserModel.username == user)
+        result = query.all() 
+
             # تبدیل نتیجه به لیست دیکشنری‌ها
-            records = []
-            for row in result:
-                record = {}
-                for column, value in row._mapping.items():
-                    # تبدیل None به رشته خالی
-                    if value is None:
-                        record[column] = " "
-                    # تبدیل Timestamp به رشته
-                    elif column == 'datavisit' and hasattr(value, 'strftime'):
-                        record[column] = value.strftime('%Y-%m-%d')
-                    # سایر مقادیر
-                    else:
-                        record[column] = value
-                records.append(record)
-                
-            return records
-            
+        records = []
+        for row in result:
+            record = {}
+            for key in row._fields:
+                value = getattr(row , key)
+                if value is None :
+                    record[key] = " "
+                elif key == 'datavisit' and hasattr(value, 'strftime'):
+                    record[key] = value.strftime('%Y-%m-%d')
+                else :
+                    record[key] = value
+            records.append(record)
+        return records        
     except Exception as e:
         print(f"Unexpected error: {str(e)}")
         return {"error": str(e), "data": {}}
+    finally:
+        if db is not None:
+            db.close()
 
 def sendDisActiveDescription(data: DisActiveDescription , username: str):
-    with engine.connect() as conn:
-        # بررسی وجود قبلی
-        check_sql = text("""
-            SELECT COUNT(*) FROM DisActiveDescription WHERE customer_code = :customer_code
-        """)
-        result = conn.execute(check_sql, {"customer_code": data.customer_code}).scalar()
-        print(f"Check result for customer_code {data.customer_code}: {result}")
-        if int(result) > 0:
+    db = None
+    user_id = None
+    try:
+        db = SessionLocal()
+        count = db.query(func.count(DisActiveDescriptionModel.customer_code))\
+            .filter(DisActiveDescriptionModel.customer_code == data.customer_code).scalar()
+        print(count)
+        if int(count) > 0:
             return {"error": "This customer has already been deactivated."}
-        # درج جدید
-        date_miladi = datetime.now()
-        date_shamsi = jdatetime.datetime.now().strftime('%Y/%m/%d')
-        sql = text("""
-            INSERT INTO DisActiveDescription (customer_code, Reason, Description, username, date_shamsi, date_miladi)
-            VALUES (:customer_code, :Reason, :Description, :username, :date_shamsi, :date_miladi)
-        """)
-        
-        conn.execute(sql, {
-            "customer_code": int(data.customer_code),
-            "Reason": data.Reason,
-            "Description": data.Description,
-            "username": username,
-            "date_shamsi": date_shamsi,
-            "date_miladi": date_miladi
-            
-        })
-        conn.commit()
+        user_data = db.query(UserModel).filter(UserModel.username == username ).first()
+        if user_data:
+            user_id = user_data.id
+        disActive_record = DisActiveDescriptionModel(
+        customer_code = int(data.customer_code),
+        Reason = data.Reason,
+        Description = data.Description,
+        user_id = user_id,
+        created_at =  datetime.now()
+            )
+        print(disActive_record)
+        db.add(disActive_record)
+        db.commit()
         return {"message": "Customer deactivated successfully"}
+        
+    except Exception as e:
+        print(f"Unexpected error: {str(e)}")
+        return {"error": str(e), "data": {}}
+    finally:
+        if db is not None:
+            db.close()
+    
     
  
 def sendProductCategory(data: ProductCategory , username: str):
-    with engine.connect() as conn:
-        #TODO بعد کاری کن اخرین رکرود تو اینجا در هر روز زخیره بشه
-        date_miladi = datetime.now()
-        date_shamsi = jdatetime.datetime.now().strftime('%Y/%m/%d')
+    db = None
+    user_id = None
+    try:
+        db = SessionLocal()
+        user_data = db.query(UserModel).filter(UserModel.username == username ).first()
+        if user_data:
+            user_id = user_data.id
+        for item in data.sku:
+            product_category_record = ProductCategoryCustomerModel(
+            customer_code = int(data.customer_code),
+            sku = item,
+            user_id = user_id,
+            created_at =  datetime.now()
+                )
+            db.add(product_category_record)
+            db.commit()
+            
         
-        insert_sql = text("""
-            INSERT INTO ProductCategoryCustomer (customer_code, sku, username, date_shamsi, date_miladi)
-            VALUES (:customer_code, :sku, :username, :date_shamsi, :date_miladi)
-        """)
 
-        for item in data.sku:            # ذخیرهٔ هر SKU در یک ردیف مستقل
-            conn.execute(insert_sql, {
-                "customer_code": int(data.customer_code),
-                "sku": item,
-                "username": username,
-                "date_shamsi": date_shamsi,
-                "date_miladi": date_miladi
-            })
-        
-        conn.commit()
         return {"message": "Product categories saved successfully"}
+        
+    except Exception as e:
+        print(f"Unexpected error: {str(e)}")
+        return {"error": str(e), "data": {}}
+    finally:
+        if db is not None:
+            db.close()
    
    
 def sendCRMCustomerDescription(data: CRMCustomerDescription , username: str):
-    with engine.connect() as conn:
-        date_miladi = datetime.now()
-        date_shamsi = jdatetime.datetime.now().strftime('%Y/%m/%d')
-        
-        insert_sql = text("""
-            INSERT INTO CRMCustomerDescription (customer_code, description_crm, is_customer_visit, is_owner_in_shop, is_cooperation, username, date_shamsi, date_miladi)
-            VALUES (:customer_code, :description_crm, :is_customer_visit, :is_owner_in_shop,:is_cooperation, :username, :date_shamsi, :date_miladi)
-        """)
-        
-        conn.execute(insert_sql, {
-            "customer_code": int(data.customer_code),
-            "description_crm": data.Description,
-            "is_customer_visit": data.is_customer_visit,
-            "is_owner_in_shop": data.is_owner_in_shop,
-            "is_cooperation":data.is_cooperation,
-            "username": username,
-            "date_shamsi": date_shamsi,
-            "date_miladi": date_miladi
-        })
-        conn.commit()
+    db = None
+    user_id = None
+    try:
+        db = SessionLocal()
+        user_data = db.query(UserModel).filter(UserModel.username == username ).first()
+        if user_data:
+            user_id = user_data.id
+        crm_record = CRMCustomerDescriptionModel(
+            crm_record = CRMCustomerDescriptionModel(
+                customer_code=int(data.customer_code),
+                description_crm=data.Description,       
+                is_customer_visit=data.is_customer_visit,
+                is_owner_in_shop=data.is_owner_in_shop,
+                is_cooperation=data.is_cooperation,
+                user_id=user_id,                       
+                created_at=datetime.now()             
+                 )
+                )
+        db.add(crm_record)
+        db.commit()  
         return {"message": "CRM customer description saved successfully"}
+    except Exception as e:
+        print(f"Unexpected error: {str(e)}")
+        return {"error": str(e), "data": {}}
+    finally:
+        if db is not None:
+            db.close()
         
+def save_customer_edit(data: CustomerEdit, username: str):
+    db = None
+    user_id = None
+    try:
+        db = SessionLocal()
+        user_data = db.query(UserModel).filter(UserModel.username == username ).first()
+        if user_data:
+            user_id = user_data.id
+        customer_record = CustomerIditModel(
+            customer_code = data.customer_code,
+            national_code = data.nationalCode,
+            role_code = data.roleCode,
+            postal_code = data.postalCode,
+            customer_board = data.customerboard,
+            customer_name = data.custumername,
+            address = data.address,
+            mobile_number = data.mobileNumber,
+            mobile_number2 = data.mobileNumber2,
+            phone_number = data.phoneNumber,
+            store_area = data.storeArea,
+            user_id = user_id,
+            created_at = datetime.now()  
+        )
+        db.add(customer_record)
+        db.commit()
+        return {"message": "CRM customer description saved successfully"}
+    except Exception as e:
+        print(f"Unexpected error: {str(e)}")
+        return {"error": str(e), "data": {}}
+    finally:
+        if db is not None:
+            db.close()
         
 def update_customer_isvisit(customer_code: int , visit :int = 2):
-    with engine.connect() as conn:
-        try:
-            sql = text("""
-                        UPDATE visit_reports
-                        SET visit_status = :visit  
-                        WHERE customer_id = :customer_code
-            """)
-            result = conn.execute(sql, {"customer_code": int(customer_code) , "visit" : visit })
-            conn.commit()
-            if result.rowcount == 0:
-                return {"error": "Customer not found."}
-            return {"message": f"isvisit updated to {visit}"}
-        except Exception as e:
-            return {"error": str(e)}
+    db = None
+    try:
+        db = SessionLocal()
+        report =  db.query(VisitReportModel)\
+           .filter(VisitReportModel.customer_id == customer_code)\
+           .order_by(desc(VisitReportModel.id))\
+           .first()
+        if report:
+            report.visit_status = visit # type: ignore
+        db.commit()       
+        db.refresh(report) 
+
         
-def save_customer_edit(data: CustomerEditModel, username: str):
-    with engine.connect() as conn:
-        try:
-            date_miladi = datetime.now()
-            date_shamsi = jdatetime.datetime.now().strftime('%Y/%m/%d')
-            
-            sql = text("""
-                INSERT INTO CustomerIditTabel (
-                    customer_code, national_code, role_code, postal_code, 
-                    customer_board, customer_name, address, mobile_number, 
-                    mobile_number2, phone_number, store_area, username, 
-                    date_shamsi, date_miladi
-                ) VALUES (
-                    :customer_code, :national_code, :role_code, :postal_code,
-                    :customer_board, :customer_name, :address, :mobile_number,
-                    :mobile_number2, :phone_number, :store_area, :username,
-                    :date_shamsi, :date_miladi
-                )
-            """)
-            conn.execute(sql, {
-                "customer_code": data.customer_code,
-                "national_code": data.nationalCode,
-                "role_code": data.roleCode,
-                "postal_code": data.postalCode,
-                "customer_board": data.customerboard,
-                "customer_name": data.custumername,
-                "address": data.address,
-                "mobile_number": data.mobileNumber,
-                "mobile_number2": data.mobileNumber2,
-                "phone_number": data.phoneNumber,
-                "store_area": data.storeArea,
-                "username": username,
-                "date_shamsi": date_shamsi,
-                "date_miladi": date_miladi
-            })
-            
-            conn.commit()
-            return {"message": "Customer edit saved successfully"}
-            
-        except Exception as e:
-            print(f"Database error in save_customer_edit: {e}")
-            return {"error": f"Failed to save customer edit: {str(e)}"}
-        
-        
-def update_customer_isedit(customer_code: int  , edit:int = 1):
-    with engine.connect() as conn:
-        try:
-            sql = text("""
-                        UPDATE visit_reports
-                        SET edit_status =:edit
-                        WHERE customer_id = :customer_code
-            """)
-            result = conn.execute(sql, {"customer_code": int(customer_code) , "edit" : edit})
-            conn.commit()
-            if result.rowcount == 0:
-                return {"error": "Customer not found."}
-            return {"message": f"isedit updated to {edit}"}
-        except Exception as e:
-            return {"error": str(e)}
+        db.commit()
+        return {"message": "CRM customer description saved successfully"}
+    except Exception as e:
+        if db is not None:
+            db.rollback()
+        print(f"Unexpected error: {str(e)}")
+        return {"error": str(e), "data": {}}
+    finally:
+        if db is not None:
+            db.close()
              
+
+def update_customer_isedit(customer_code: int, edit: int = 1):
+    db = None
+    try:
+        db = SessionLocal()
+        report = db.query(VisitReportModel)\
+                   .filter(VisitReportModel.customer_id == customer_code)\
+                   .order_by(VisitReportModel.id.desc())\
+                   .first()
+
+        if not report:
+            return {"error": "Customer not found."}
+
+        report.edit_status = bool(edit)  # type: ignore
+        db.commit()
+        db.refresh(report)
+
+        return {"message": f"isedit updated to {edit}"}
+
+    except Exception as e:
+        if db is not None:
+            db.rollback()
+        print(f"Unexpected error: {str(e)}")
+        return {"error": str(e), "data": {}}
+    finally:
+        if db is not None:
+            db.close()

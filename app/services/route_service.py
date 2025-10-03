@@ -1,14 +1,8 @@
-from cProfile import label
-from unittest import result
-from sqlalchemy import text, func
-from datetime import datetime
-from ..models.base import  SessionLocal , relationship
+from sqlalchemy import func
+from ..models.base import  SessionLocal
 from ..models.customer_model import CustomerModel
-from ..models.visit_report import VisitReport
+from ..models.customer_analysis.visit_report import VisitReport
 from ..models.user_model import UserModel
-
-
-
 
 def get_routes(): 
      db = None

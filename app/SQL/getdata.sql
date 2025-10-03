@@ -55,24 +55,18 @@ CREATE TABLE DisActiveDescription (
     customer_code INT NOT NULL,
     Reason VARCHAR(255) NOT NULL,
     Description TEXT,
-    PRIMARY KEY (customer_code)
-    username VARCHAR(255),
-    date_shamsi VARCHAR(20),
-    date_miladi DATETIME;
-);
-
-
-
-
+    PRIMARY KEY (customer_code),
+    user_id INT,
+    created_at DATETIME);
 
 
 
 CREATE TABLE ProductCategoryCustomer(
+    id INT AUTO_INCREMENT PRIMARY KEY,
     customer_code INT NOT NULL,
     sku VARCHAR(100) NOT NULL,
-    username VARCHAR(255),
-    date_shamsi VARCHAR(20),
-    date_miladi DATETIME
+    user_id INT Not NULL,
+    created_at DATETIME
 );
 
 
@@ -82,9 +76,8 @@ CREATE TABLE CRMCustomerDescription (
     is_customer_visit TINYINT(1) DEFAULT 0,   -- آیا مشتری (فروشنده) خودش ویزیت/سرکشی می‌کند؟
     is_owner_in_shop TINYINT(1) DEFAULT 0,    -- آیا صاحب مغازه در مغازه هست؟
     is_cooperation TINYINT(1) DEFAULT 1,      -- آیا با ما همکاری می‌کند؟ (1 = بله, 0 = خیر)
-    username VARCHAR(255),
-    date_shamsi VARCHAR(20),
-    date_miladi DATETIME
+    user_id INT Not NULL,
+    created_at DATETIME
 );
 
 
@@ -102,8 +95,7 @@ CREATE TABLE CustomerIditTabel (
     phone_number VARCHAR(20),
     store_area INT,
     username VARCHAR(200),
-    date_shamsi VARCHAR(20),
-    date_miladi DATETIME
+    created_at DATETIME
 )
 
 

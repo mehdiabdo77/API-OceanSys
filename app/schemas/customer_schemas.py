@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional
 
-class CustomerEditModel(BaseModel):
+class CustomerEdit(BaseModel):
     customer_code: int
     nationalCode: str | None = None
     roleCode: int | None = None
