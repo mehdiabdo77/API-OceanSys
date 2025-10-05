@@ -82,7 +82,7 @@ CREATE TABLE CRMCustomerDescription (
 
 
 
-CREATE TABLE CustomerIditTabel (
+CREATE TABLE CustomerIditTBL (
     customer_code INT NOT NULL,
     national_code VARCHAR(12),
     role_code VARCHAR(20),
@@ -94,7 +94,7 @@ CREATE TABLE CustomerIditTabel (
     mobile_number2 VARCHAR(20),
     phone_number VARCHAR(20),
     store_area INT,
-    username VARCHAR(200),
+    user_id INT Not NULL,
     created_at DATETIME
 )
 
@@ -124,7 +124,8 @@ CREATE TABLE position_tbl (
 CREATE TABLE user_tbl (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(200) UNIQUE NOT NULL,
-    full_name VARCHAR(255) NOT NULL,
+    first_name VARCHAR(60) NOT NULL,
+    last_name VARCHAR(60) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     is_active BOOLEAN DEFAULT TRUE,
     department_id INT NOT NULL,

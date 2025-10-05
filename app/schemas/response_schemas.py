@@ -2,10 +2,13 @@ from typing import Optional, Union
 from pydantic import BaseModel
 
 class UserModel(BaseModel):
-    id: int
-    user: str
-    position: str
-    
+    # id: int
+    username: str
+    first_name: str
+    last_name: str
+    is_active : bool
+    position_id : int
+    department_id : int
 
 class VisitCreate(BaseModel):
     customer_code: int

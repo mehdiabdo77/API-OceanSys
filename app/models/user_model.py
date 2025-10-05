@@ -7,7 +7,8 @@ class UserModel(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(200), unique=True, nullable=False)
-    full_name = Column(String(255), nullable=False)
+    first_name = Column(String(255), nullable=False)
+    last_name = Column(String(255), nullable=False)
     password_hash = Column(String(255), nullable=False)
     is_active = Column(Integer, default=True)
     department_id = Column(Integer, ForeignKey("department_tbl.id"), nullable=False)
@@ -17,4 +18,4 @@ class UserModel(Base):
     created_at_jalali = Column(String(10), nullable=False)
     updated_at_jalali = Column(String(10), nullable=False)
 
-    visit_reports = relationship("VisitReport", back_populates="user")
+    visit_reports = relationship("VisitReportModel", back_populates="user")

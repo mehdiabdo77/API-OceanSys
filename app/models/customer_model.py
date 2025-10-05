@@ -20,4 +20,4 @@ class CustomerModel(Base):
     تلفن_همراه = Column(String(20), nullable=True)
     کد_پستی_مشتری = Column(String(20), nullable=True)
 
-    visit_reports = relationship("VisitReport", back_populates="customer")
+    visit_reports = relationship("VisitReportModel", back_populates="customer")

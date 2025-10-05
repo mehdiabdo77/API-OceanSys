@@ -14,12 +14,12 @@ def getUserDB(
      try:
           db = SessionLocal()
           query_result = db.query(UserModel).filter(UserModel.username == user).first()
-          
           print(f"Query result: {query_result}")
           if query_result:
                data = {
                      "username": query_result.username,
-                     "full_name": query_result.full_name,
+                     "first_name": query_result.first_name,
+                     "last_name": query_result.last_name,
                      "password_hash": query_result.password_hash,
                      "is_active": query_result.is_active,
                      "department_id": query_result.department_id,
