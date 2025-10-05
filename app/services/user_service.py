@@ -59,8 +59,24 @@ def saveUserDB(
           db.add(user_record)
           db.commit()
           return {"message": "User saved successfully"}
-     except Exception:
+     except Exception as e:
+          if db is not None:
+              db.rollback()
+          print(f"Error saving user: {e}")
           return {"message": "User saved unsuccessfully"}
+     finally:
+          if db is not None:
+               db.close()
+               
+               
+def Countuser():
+     db = None
+     try:
+          db = SessionLocal()
+          query_result = db.query(UserModel).count()
+          return query_result
+     except Exception as e:
+        print(f"Error counting users: {e}")
      finally:
           if db is not None:
                db.close()
