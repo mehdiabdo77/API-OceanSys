@@ -36,7 +36,6 @@ class TaskComplete(BaseModel):
     customer_code: str 
     
 
-# TODO  باید این مدل اصلاح بشه و توش چیز اضافی نباشه
 class CustomerModel(BaseModel):
     customer_code: int 
     customer_name: str| None
@@ -51,8 +50,5 @@ class CustomerModel(BaseModel):
     address: str
     phone: str
     mobile: str | None
+    mobile2: str | None
     postal_code: str | None
-    username: str
-    datavisit : Optional[str] = None
-    visited : int
-    edit : int

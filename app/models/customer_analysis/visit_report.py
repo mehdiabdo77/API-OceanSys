@@ -6,7 +6,7 @@ class VisitReportModel(Base):
     __tablename__ = "visit_reports"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    customer_id = Column(Integer, ForeignKey("customer.کد_مشتری"), nullable=False)
+    customer_id = Column(Integer, ForeignKey("customer.customer_code"), nullable=False)
     user_id = Column(Integer, ForeignKey("user_tbl.id"), nullable=False)
     edit_status = Column(Boolean, default=False, nullable=False)
     visit_status = Column(Integer, default=0)

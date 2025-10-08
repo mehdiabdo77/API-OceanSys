@@ -18,45 +18,42 @@ def getCustomerInfo(user):
         subquery = db.query(func.max(VisitReportModel.visit_Date)).scalar()
         query = (
             db.query(
-                CustomerModel.کد_مشتری.label("customer_code"),
-                CustomerModel.نام_مشتری.label("customer_name"),
-                CustomerModel.تابلو_مشستری.label("customer_board"),
-                CustomerModel.کد_ملی.label("national_code"),
-                CustomerModel.محدوده.label("area"),
-                CustomerModel.ناحیه.label("zone"),
-                CustomerModel.مسیر.label("route"),
-                CustomerModel.Latitude.label("latitude"),
-                CustomerModel.Longitude.label("longitude"),
-                CustomerModel.وضعیت.label("status"),
-                CustomerModel.آدرس_مشتری.label("address"),
-                CustomerModel.تلفن_اول.label("phone"),
-                CustomerModel.تلفن_همراه.label("mobile"),
-                CustomerModel.کد_پستی_مشتری.label("postal_code"),
-                UserModel.username.label("username"),
-                VisitReportModel.visit_Date.label("datavisit"),
-                VisitReportModel.user_idit_data.label("upload_date"),
-                VisitReportModel.visit_status.label("visited"),
-                VisitReportModel.edit_status.label("edit")
-            ).join(VisitReportModel , VisitReportModel.customer_id== CustomerModel.کد_مشتری))\
-                .join(UserModel , UserModel.id == VisitReportModel.user_id)\
-                .filter(VisitReportModel.visit_Date == subquery)\
-                .filter(UserModel.username == user)
-        result = query.all() 
+                CustomerModel.customer_code,
+                CustomerModel.customer_name,
+                CustomerModel.customer_board,
+                CustomerModel.national_code,
+                CustomerModel.area,
+                CustomerModel.zone,
+                CustomerModel.route,
+                CustomerModel.latitude,
+                CustomerModel.longitude,
+                CustomerModel.status,
+                CustomerModel.address,
+                CustomerModel.phone,
+                CustomerModel.mobile,
+                CustomerModel.mobile2,
+                CustomerModel.postal_code,
+            )
+            .join(VisitReportModel, VisitReportModel.customer_id == CustomerModel.customer_code)
+            .join(UserModel, UserModel.id == VisitReportModel.user_id)
+            .filter(VisitReportModel.visit_Date == subquery)
+            .filter(UserModel.username == user)
+        )
+        result = query.all()
 
-            # تبدیل نتیجه به لیست دیکشنری‌ها
         records = []
         for row in result:
-            record = {}
-            for key in row._fields:
-                value = getattr(row , key)
-                if value is None :
-                    record[key] = " "
-                elif key == 'datavisit' and hasattr(value, 'strftime'):
-                    record[key] = value.strftime('%Y-%m-%d')
-                else :
-                    record[key] = value
-            records.append(record)
-        return records        
+            data = dict(row._mapping)
+            for key, value in list(data.items()):
+                if key in ("latitude", "longitude") and value is not None:
+                    try:
+                        data[key] = float(value)
+                    except Exception:
+                        data[key] = str(value)
+                elif value is None:
+                    data[key] = " "
+            records.append(data)
+        return records
     except Exception as e:
         print(f"Unexpected error: {str(e)}")
         return {"error": str(e), "data": {}}

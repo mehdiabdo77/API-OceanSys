@@ -1,23 +1,26 @@
 from sqlalchemy import Column, Integer, String, Text, DECIMAL
 from sqlalchemy.orm import relationship
 from app.core.base import Base
-# TODO اسم ستون ها دیتا بیس از فارسی به اینگلیسی تغییر بده تو اینده
+
 class CustomerModel(Base):
     __tablename__ = "customer"
 
-    کد_مشتری = Column(Integer, primary_key=True)
-    نام_مشتری = Column(String(255), nullable=True)
-    تابلو_مشستری = Column(String(255), nullable=True)
-    کد_ملی = Column(String(20), nullable=True)
-    محدوده = Column(String(100), nullable=True)
-    ناحیه = Column(String(100), nullable=True)
-    مسیر = Column(String(100), nullable=True)
-    Latitude = Column(DECIMAL(9, 6), nullable=True)
-    Longitude = Column(DECIMAL(9, 6), nullable=True)
-    وضعیت = Column(String(50), nullable=True)
-    آدرس_مشتری = Column(Text, nullable=True)
-    تلفن_اول = Column(String(20), nullable=True)
-    تلفن_همراه = Column(String(20), nullable=True)
-    کد_پستی_مشتری = Column(String(20), nullable=True)
+    customer_code = Column(Integer, primary_key=True)
+    customer_name = Column(String(150), nullable=False)
+    customer_board = Column(String(150), nullable=False)
+    national_code = Column(String(20), nullable=True)
+    area = Column(String(20), nullable=False)
+    zone = Column(String(20), nullable=False)
+    route = Column(String(20), nullable=False)
+    latitude = Column(DECIMAL(9, 6), nullable=True)
+    longitude = Column(DECIMAL(9, 6), nullable=True)
+    status = Column(String(10), nullable=False)
+    address = Column(Text, nullable=True)
+    phone = Column(String(11), nullable=True)
+    mobile = Column(String(11), nullable=True)
+    mobile2 = Column(String(11), nullable=True)
+    postal_code = Column(String(12), nullable=True)
+    
+    image_address = Column(Text, nullable=True , default="")
 
     visit_reports = relationship("VisitReportModel", back_populates="customer")
