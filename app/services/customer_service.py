@@ -6,7 +6,7 @@ from app.models.customer_model import CustomerModel
 from app.models.customer_analysis.disactive_description_model import DisActiveDescriptionModel
 from app.models.customer_analysis.Customer_Idit import CustomerIditModel
 from app.models.customer_analysis.product_category_customer import ProductCategoryCustomerModel
-from app.models.user_model import UserModel
+from app.models.user.user_model import UserModel
 from app.models.customer_analysis.visit_report import VisitReportModel
 from app.schemas.customer_schemas import CustomerEdit, DisActiveDescription , ProductCategory, CRMCustomerDescription
 from ..core.base import SessionLocal, engine

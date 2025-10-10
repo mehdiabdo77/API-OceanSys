@@ -128,35 +128,71 @@ CREATE TABLE user_tbl (
     last_name VARCHAR(60) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     is_active BOOLEAN DEFAULT TRUE,
-    department_id INT NOT NULL,
-    position_id INT NOT NULL,
+    -- department_id INT NOT NULL, حذف میشود - از مدل حذف شود
+    -- position_id INT NOT NULL, حذف میشود - از مدل حذف شود
+    role_id INT NOT NULL,  -- هر کاربر دقیقا یک نقش دارد
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    created_at_jalali VARCHAR(10) NOT NULL,
-    updated_at_jalali VARCHAR(10) NOT NULL,
-    
-    CONSTRAINT fk_department
-        FOREIGN KEY (department_id) 
-        REFERENCES department_tbl(id)
-        ON DELETE RESTRICT,
-    
-    CONSTRAINT fk_position
-        FOREIGN KEY (position_id) 
-        REFERENCES position_tbl(id)
-        ON DELETE RESTRICT
+    -- ارتباط که باید بدم
+    FOREIGN KEY (role_id) REFERENCES role_tbl(id) ON DELETE RESTRICT
+
+);
+
+CREATE TABLE role_tbl (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,    -- مثل "Admin", "ManagerFinance"
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE permission_tbl (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    code VARCHAR(100) NOT NULL UNIQUE,    -- مثل: USER_MANAGE, UPLOAD_DATA
+    name VARCHAR(100) NOT NULL,           -- عنوان فارسی مثل "مدیریت کاربران"
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE user_permission_tbl (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    permission_id INT NOT NULL,
+    grant_type ENUM('ALLOW', 'DENY') DEFAULT 'ALLOW',  -- نوع مجوز: مجاز یا ممنوع
+    FOREIGN KEY (user_id) REFERENCES user_tbl(id) ON DELETE CASCADE,
+    FOREIGN KEY (permission_id) REFERENCES permission_tbl(id) ON DELETE CASCADE,
+    UNIQUE (user_id, permission_id)
+);
+
+CREATE TABLE role_permission_tbl (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    role_id INT NOT NULL,
+    permission_id INT NOT NULL,
+
+    FOREIGN KEY (role_id) REFERENCES role_tbl(id) ON DELETE CASCADE,
+    FOREIGN KEY (permission_id) REFERENCES permission_tbl(id) ON DELETE CASCADE,
+
+    UNIQUE (role_id, permission_id)  -- جلوگیری از تکرار
 );
 
 
 
--- درج داده به جداول parent اول
-INSERT INTO department_tbl (name, description) VALUES 
-('برنامه ریزی', 'واحد برنامه ریزی ستاد ');
+INSERT INTO role_tbl (id, name, description) VALUES
+(1, 'Admin', 'دسترسی کامل به همه ماژول‌ها'),
+(2, 'SalesManager', 'مدیر فروش - دسترسی فقط به ماژول‌های فروش'),
+(3, 'FinanceManager', 'مدیر مالی - دسترسی به ماژول‌های مالی و گزارش‌ها'),
+(4, 'SalesAgent', 'بازاریاب - دسترسی محدود برای ثبت مشتری و ارسال اطلاعات');
 
+INSERT INTO permission_tbl (id, code, name, description) VALUES
+(1, 'USER_MANAGE', 'مدیریت کاربران', 'ایجاد، حذف و ویرایش کاربران سیستم'),
+(2, 'CUSTOMER_SCAN', 'اسکن مشتریان مسیر', 'دسترسی به ماژول بازرسی و اسکن مشتری'),
+(3, 'UPLOAD_DATA', 'ارسال اطلاعات', 'امکان ارسال داده‌های ثبت نشده'),
+(4, 'NEW_CUSTOMER', 'افزودن مشتری جدید', 'دسترسی به ثبت مشتری جدید'),
+(5, 'COMPETITOR_PRICES', 'قیمت رقبا', 'مشاهده و ثبت قیمت رقبا'),
+(6, 'FINANCE_REPORTS', 'گزارشات مالی', 'مشاهده گزارشات مالی'),
+(7, 'VIEW_DASHBOARD', 'داشبورد مدیریتی', 'نمایش خلاصه وضعیت کل سیستم');
 
-INSERT INTO position_tbl (title, level) VALUES 
-('مدیر', 1),
-('کارشناس', 3),
-('سرپرست', 2);
+INSERT INTO role_permission_tbl (role_id, permission_id)
+SELECT 1, id FROM permission_tbl;
 
 
 

@@ -2,8 +2,8 @@ from pydantic import BaseModel
 
 class User(BaseModel):
     username: str 
-    fullName : str
+    first_name : str
+    last_name : str
     password : str
     isactive : bool
-    departmentID : int # (Foreign Key → Department.id)
-    positionID : int # (Foreign Key → Position.id) #TODO جدول باید طراحی کنی
+    role_id : int # (Foreign Key → role_tbl.id)

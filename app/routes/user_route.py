@@ -34,10 +34,13 @@ def register_first_user(data : User):
     count = Countuser()
     if isinstance(count, int) and count == 0:
         result = saveUserDB(data)
-        return {
-            "success": True,
-            "message": "کاربر اول با موفقیت ایجاد شد",
-            "data": result
-        }
+        if result["message"] == "successfully":
+            return {
+                "success": True,
+                "message": "کاربر اول با موفقیت ایجاد شد",
+                "data": result
+            }
+        else :
+            raise HTTPException(status_code=400, detail="Error in saving user")
     else :
         raise HTTPException(status_code=400, detail="Already have a first user")
