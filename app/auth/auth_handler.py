@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, status
 from app.core.config import ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, ALGORITHM
 from app.utils.security import verify_password
 from app.services.user_service import getUserDB
@@ -58,8 +58,12 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     '''
     try:
         username = decode_token(token)
-        print(username)
-        return username
+        user = getUserDB(username)
+        if not user:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
+        if user["is_active"]== 0:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User not active")
+        return user["id"]
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
 

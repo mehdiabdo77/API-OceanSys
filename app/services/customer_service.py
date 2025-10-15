@@ -11,7 +11,7 @@ from app.models.customer_analysis.visit_report import VisitReportModel
 from app.schemas.customer_schemas import CustomerEdit, DisActiveDescription , ProductCategory, CRMCustomerDescription
 from ..core.base import SessionLocal, engine
 
-def getCustomerInfo(user):
+def getCustomerInfo(user_id):
     db = None
     try:
         db = SessionLocal()
@@ -37,7 +37,7 @@ def getCustomerInfo(user):
             .join(VisitReportModel, VisitReportModel.customer_id == CustomerModel.customer_code)
             .join(UserModel, UserModel.id == VisitReportModel.user_id)
             .filter(VisitReportModel.visit_Date == subquery)
-            .filter(UserModel.username == user)
+            .filter(UserModel.id == user_id)
         )
         result = query.all()
 

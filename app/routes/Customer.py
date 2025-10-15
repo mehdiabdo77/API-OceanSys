@@ -2,6 +2,7 @@ from fastapi import HTTPException
 from typing import List
 from fastapi import APIRouter, Depends
 from app.auth.auth_handler import get_current_user
+from app.auth.permissions import permission_required
 from app.services.customer_service import getCustomerInfo, sendDisActiveDescription , sendProductCategory , sendCRMCustomerDescription , update_customer_isvisit, save_customer_edit , update_customer_isedit
 from app.schemas.customer_schemas import CustomerModel , CustomerEdit, DisActiveDescription, ProductCategory , CRMCustomerDescription , TaskComplete
 from app.core.config import ACCESS_TOKEN_EXPIRE_MINUTES
@@ -13,7 +14,7 @@ customer_router = APIRouter()
     "/getCustomerData",
     response_model=List[CustomerModel] 
     )
-def get_customer_data(username: str = Depends(get_current_user) , ):
+def get_customer_data(username: str = Depends(get_current_user) ):
     """
     گرفتن اطلاعات کامل مشتری 
     """

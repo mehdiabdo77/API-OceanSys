@@ -17,6 +17,7 @@ def getUserDB(
           print(f"Query result: {query_result}")
           if query_result:
                data = {
+                    "id" : query_result.id,
                      "username": query_result.username,
                      "first_name": query_result.first_name,
                      "last_name": query_result.last_name,
