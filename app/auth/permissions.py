@@ -10,7 +10,7 @@ def permission_required(permission_code : str):
      def wrapper(current_user = Depends(get_current_user)):
           db = SessionLocal()
           try:
-               if not user_has_permission(db, current_user["id"], permission_code):
+               if not user_has_permission(db, current_user, permission_code):
                     raise HTTPException(
                      status_code=status.HTTP_403_FORBIDDEN,
                      detail=f"Access denied: missing permission '{permission_code}'"

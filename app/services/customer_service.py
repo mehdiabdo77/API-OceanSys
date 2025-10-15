@@ -61,9 +61,8 @@ def getCustomerInfo(user_id):
         if db is not None:
             db.close()
 
-def sendDisActiveDescription(data: DisActiveDescription , username: str):
+def sendDisActiveDescription(data: DisActiveDescription , user_id: int):
     db = None
-    user_id = None
     try:
         db = SessionLocal()
         count = db.query(func.count(DisActiveDescriptionModel.customer_code))\
@@ -71,9 +70,6 @@ def sendDisActiveDescription(data: DisActiveDescription , username: str):
         print(count)
         if int(count) > 0:
             return {"error": "This customer has already been deactivated."}
-        user_data = db.query(UserModel).filter(UserModel.username == username ).first()
-        if user_data:
-            user_id = user_data.id
         disActive_record = DisActiveDescriptionModel(
         customer_code = int(data.customer_code),
         Reason = data.Reason,
@@ -95,14 +91,10 @@ def sendDisActiveDescription(data: DisActiveDescription , username: str):
     
     
  
-def sendProductCategory(data: ProductCategory , username: str):
+def sendProductCategory(data: ProductCategory , user_id: int):
     db = None
-    user_id = None
     try:
         db = SessionLocal()
-        user_data = db.query(UserModel).filter(UserModel.username == username ).first()
-        if user_data:
-            user_id = user_data.id
         for item in data.sku:
             product_category_record = ProductCategoryCustomerModel(
             customer_code = int(data.customer_code),
@@ -125,14 +117,10 @@ def sendProductCategory(data: ProductCategory , username: str):
             db.close()
    
    
-def sendCRMCustomerDescription(data: CRMCustomerDescription , username: str):
+def sendCRMCustomerDescription(data: CRMCustomerDescription , user_id: int):
     db = None
-    user_id = None
     try:
         db = SessionLocal()
-        user_data = db.query(UserModel).filter(UserModel.username == username ).first()
-        if user_data:
-            user_id = user_data.id
         crm_record = CRMCustomerDescriptionModel(
             crm_record = CRMCustomerDescriptionModel(
                 customer_code=int(data.customer_code),
@@ -154,14 +142,10 @@ def sendCRMCustomerDescription(data: CRMCustomerDescription , username: str):
         if db is not None:
             db.close()
         
-def save_customer_edit(data: CustomerEdit, username: str):
+def save_customer_edit(data: CustomerEdit, user_id: int):
     db = None
-    user_id = None
     try:
         db = SessionLocal()
-        user_data = db.query(UserModel).filter(UserModel.username == username ).first()
-        if user_data:
-            user_id = user_data.id
         customer_record = CustomerIditModel(
             customer_code = data.customer_code,
             national_code = data.nationalCode,

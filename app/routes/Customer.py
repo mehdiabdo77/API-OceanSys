@@ -14,24 +14,23 @@ customer_router = APIRouter()
     "/getCustomerData",
     response_model=List[CustomerModel] 
     )
-def get_customer_data(username: str = Depends(get_current_user) ):
+def get_customer_data( user_id = Depends(permission_required("CUSTOMER_SCAN") )):
     """
     گرفتن اطلاعات کامل مشتری 
     """
-    customerInfo = getCustomerInfo(username)
+    customerInfo = getCustomerInfo(user_id)
     return customerInfo
 
 
 
 
-# TODO 
 @customer_router.post("/editcoustomerinfo")
-def editCustomerData( update_data: CustomerEdit  , username: str = Depends(get_current_user)):
-    if username == None :
+def editCustomerData( update_data: CustomerEdit  , user_id = Depends(permission_required("CUSTOMER_SCAN"))):
+    if user_id == None :
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
-    # ذخیره تغییرات در جدول CustomerIditTabel
-    result = save_customer_edit(update_data, username)
+    # ذخیره تغییرات در جدول CustomerIditTable
+    result = save_customer_edit(update_data, user_id)
     
     if "error" in result:
         raise HTTPException(status_code=400, detail=result["error"])
@@ -56,40 +55,40 @@ def editCustomerData( update_data: CustomerEdit  , username: str = Depends(get_c
     }
     
 @customer_router.post("/disActiveCustomer")
-def disActiveCustomer( disActiveData: DisActiveDescription , username: str = Depends(get_current_user)    ):
-    if username is None :
+def disActiveCustomer( disActiveData: DisActiveDescription , user_id = Depends(permission_required("CUSTOMER_SCAN"))    ):
+    if user_id is None :
         raise HTTPException(status_code=401, detail="Invalid credentials")
     else:
-        result = sendDisActiveDescription(disActiveData , username)
+        result = sendDisActiveDescription(disActiveData , user_id)
     if "error" in result:
         raise HTTPException(status_code=400, detail=result["error"])
-    visit_update = update_customer_isvisit(disActiveData.customer_code)
+    visit_update = update_customer_isvisit(int(disActiveData.customer_code))
     if "error" in visit_update:
         raise HTTPException(status_code=400, detail=visit_update["error"])
     return {"message": result.get("message"), "visit": visit_update.get("message")}
         
 
 @customer_router.post("/ProductCategory")
-def ProductCategoryCustomer( data: ProductCategory , username: str = Depends(get_current_user)    ):
-    if username is None :
+def ProductCategoryCustomer( data: ProductCategory , user_id = Depends(permission_required("CUSTOMER_SCAN"))    ):
+    if user_id is None :
         raise HTTPException(status_code=401, detail="Invalid credentials")
     else:
-        result = sendProductCategory(data , username)  # ← پارامتر تصحیح شد
+        result = sendProductCategory(data , user_id)  # ← پارامتر تصحیح شد
     if "error" in result:
         raise HTTPException(status_code=400, detail=result["error"])
-    visit_update = update_customer_isvisit(data.customer_code)
+    visit_update = update_customer_isvisit(int(data.customer_code))
     if "error" in visit_update:
         raise HTTPException(status_code=400, detail=visit_update["error"])
     return {"message": result.get("message"), "visit": visit_update.get("message")}
         
 
 @customer_router.post("/CRMCustomerDescription")
-def crmCustomerDescription ( data: CRMCustomerDescription , username: str = Depends(get_current_user)    ):
-    if username is None :
+def crmCustomerDescription ( data: CRMCustomerDescription , user_id = Depends(permission_required("CUSTOMER_SCAN"))    ):
+    if user_id is None :
         raise HTTPException(status_code=401, detail="Invalid credentials")
     else:
-        result = sendCRMCustomerDescription(data , username)  # ← پارامتر تصحیح شد
-    visit_update = update_customer_isvisit(data.customer_code)
+        result = sendCRMCustomerDescription(data , user_id)  # ← پارامتر تصحیح شد
+    visit_update = update_customer_isvisit(int(data.customer_code))
     if "error" in visit_update:
         raise HTTPException(status_code=400, detail=visit_update["error"])
     if "error" in result:
@@ -103,7 +102,7 @@ def task_complete ( data: TaskComplete , username: str = Depends(get_current_use
     if username is None :
         raise HTTPException(status_code=401, detail="Invalid credentials")
     else:
-        visit_update = update_customer_isvisit(data.customer_code,1)
+        visit_update = update_customer_isvisit(int(data.customer_code),1)
     if "error" in visit_update:
         raise HTTPException(status_code=400, detail=visit_update["error"])
     return visit_update
