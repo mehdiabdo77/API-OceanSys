@@ -12,7 +12,6 @@ auth_router = APIRouter()
 def login(form_data: OAuth2PasswordRequestForm = Depends()):
     print(form_data.username)
     user = getUserDB(form_data.username)
-    print(user)
     if not user or not verify_password(form_data.password, user['password_hash']):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     access_token = create_access_token(

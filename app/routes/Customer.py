@@ -6,6 +6,7 @@ from app.auth.permissions import permission_required
 from app.services.customer_service import getCustomerInfo, sendDisActiveDescription , sendProductCategory , sendCRMCustomerDescription , update_customer_isvisit, save_customer_edit , update_customer_isedit
 from app.schemas.customer_schemas import CustomerModel , CustomerEdit, DisActiveDescription, ProductCategory , CRMCustomerDescription , TaskComplete
 from app.core.config import ACCESS_TOKEN_EXPIRE_MINUTES
+from app.utils.constans import Permissions
 
 customer_router = APIRouter()
 
@@ -14,7 +15,7 @@ customer_router = APIRouter()
     "/getCustomerData",
     response_model=List[CustomerModel] 
     )
-def get_customer_data( user_id = Depends(permission_required("CUSTOMER_SCAN") )):
+def get_customer_data( user_id = Depends(permission_required(Permissions.CUSTOMER_SCAN) )):
     """
     گرفتن اطلاعات کامل مشتری 
     """
@@ -25,7 +26,10 @@ def get_customer_data( user_id = Depends(permission_required("CUSTOMER_SCAN") ))
 
 
 @customer_router.post("/editcoustomerinfo")
-def editCustomerData( update_data: CustomerEdit  , user_id = Depends(permission_required("CUSTOMER_SCAN"))):
+def editCustomerData( 
+                     update_data: CustomerEdit,
+                     user_id = Depends(permission_required(Permissions.CUSTOMER_SCAN))
+                     ):
     if user_id == None :
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
@@ -55,7 +59,10 @@ def editCustomerData( update_data: CustomerEdit  , user_id = Depends(permission_
     }
     
 @customer_router.post("/disActiveCustomer")
-def disActiveCustomer( disActiveData: DisActiveDescription , user_id = Depends(permission_required("CUSTOMER_SCAN"))    ):
+def disActiveCustomer( 
+                      disActiveData: DisActiveDescription ,
+                      user_id = Depends(permission_required(Permissions.CUSTOMER_SCAN))
+                      ):
     if user_id is None :
         raise HTTPException(status_code=401, detail="Invalid credentials")
     else:
@@ -69,7 +76,10 @@ def disActiveCustomer( disActiveData: DisActiveDescription , user_id = Depends(p
         
 
 @customer_router.post("/ProductCategory")
-def ProductCategoryCustomer( data: ProductCategory , user_id = Depends(permission_required("CUSTOMER_SCAN"))    ):
+def ProductCategoryCustomer( 
+                            data: ProductCategory,
+                            user_id = Depends(permission_required(Permissions.CUSTOMER_SCAN))
+                            ):
     if user_id is None :
         raise HTTPException(status_code=401, detail="Invalid credentials")
     else:
@@ -83,7 +93,10 @@ def ProductCategoryCustomer( data: ProductCategory , user_id = Depends(permissio
         
 
 @customer_router.post("/CRMCustomerDescription")
-def crmCustomerDescription ( data: CRMCustomerDescription , user_id = Depends(permission_required("CUSTOMER_SCAN"))    ):
+def crmCustomerDescription ( 
+                            data: CRMCustomerDescription,
+                            user_id = Depends(permission_required(Permissions.CUSTOMER_SCAN))
+                            ):
     if user_id is None :
         raise HTTPException(status_code=401, detail="Invalid credentials")
     else:
@@ -98,7 +111,7 @@ def crmCustomerDescription ( data: CRMCustomerDescription , user_id = Depends(pe
 
 
 @customer_router.post("/task_complete")
-def task_complete ( data: TaskComplete , username: str = Depends(get_current_user)    ):
+def task_complete ( data: TaskComplete, username: str = Depends(get_current_user)):
     if username is None :
         raise HTTPException(status_code=401, detail="Invalid credentials")
     else:
