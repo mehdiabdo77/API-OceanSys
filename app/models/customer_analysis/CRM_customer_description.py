@@ -13,7 +13,7 @@ class CRMCustomerDescriptionModel(Base):
     is_owner_in_shop = Column(Boolean, default=False)
     is_cooperation = Column(Boolean, default=True)
 
-    user_id = Column(Integer, ForeignKey("user_tbl.id"), nullable=True)  
+    user_id = Column(Integer, ForeignKey("user_tbl.id"), nullable=False)  
     
     created_at = Column(DateTime)
 

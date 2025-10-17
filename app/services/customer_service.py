@@ -122,7 +122,6 @@ def sendCRMCustomerDescription(data: CRMCustomerDescription , user_id: int):
     try:
         db = SessionLocal()
         crm_record = CRMCustomerDescriptionModel(
-            crm_record = CRMCustomerDescriptionModel(
                 customer_code=int(data.customer_code),
                 description_crm=data.Description,       
                 is_customer_visit=data.is_customer_visit,
@@ -130,7 +129,6 @@ def sendCRMCustomerDescription(data: CRMCustomerDescription , user_id: int):
                 is_cooperation=data.is_cooperation,
                 user_id=user_id,                       
                 created_at=datetime.now()             
-                 )
                 )
         db.add(crm_record)
         db.commit()  
