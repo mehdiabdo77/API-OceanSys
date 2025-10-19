@@ -88,3 +88,20 @@ SELECT 1
           WHERE user_id = 1 AND grant_type = 'DENY'
       )
     LIMIT 1;
+
+
+SELECT 
+    p.code,
+    CASE 
+        WHEN up.grant_type = 'DENY' THEN  0
+        WHEN up.grant_type = 'ALLOW' THEN  1
+        WHEN rp.permission_id is not null THEN  1
+        ELSE  0
+    END as has_access
+from permission_tbl as p
+LEFT join user_permission_tbl as up 
+    on up.permission_id = p.id and up.user_id=1
+LEFT join user_tbl as u
+    on u.id = 1
+left join role_permission_tbl as rp 
+    on rp.permission_id = p.id and rp.role_id = u.role_id

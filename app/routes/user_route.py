@@ -3,6 +3,7 @@ from sqlalchemy import null
 from app.auth.auth_handler import get_current_user
 from app.auth.permissions import permission_required
 from app.schemas.response_schemas import UserModel
+from app.services.permission_service import get_all_permission_user
 from app.services.user_service import Countuser, getUserDB , saveUserDB
 from app.core.config import ACCESS_TOKEN_EXPIRE_MINUTES
 from app.schemas.user_schemas import User
@@ -57,3 +58,13 @@ def register_first_user(data : User):
             raise HTTPException(status_code=400, detail="Error in saving user")
     else :
         raise HTTPException(status_code=400, detail="Already have a first user")
+
+  
+@user_router.post("/get_permission")
+def get_user_permission(user_id  = Depends(get_current_user)):
+    result = get_all_permission_user(user_id)
+    if result["status"] == True:
+        return result
+    else:
+        raise HTTPException(status_code=400, detail="Error in getting permissions")
+

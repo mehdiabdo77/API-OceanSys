@@ -1,5 +1,7 @@
-from app.core.base import Base, SessionLocal 
-from sqlalchemy.orm import Session
+from operator import and_
+from sqlalchemy import Case, false
+from app.core.base import SessionLocal 
+from sqlalchemy.orm import aliased, query
 from app.models.user.user_model import UserModel
 from app.models.user.permission_model import PermissionModel
 from app.models.user.role_permission_model import RolePermissionModel
@@ -60,5 +62,38 @@ def user_has_permission( user_id: int, permission_code: str) -> bool:
             session.close()
 
 
-def edit_user_permission():
-    pass
+def get_all_permission_user(user_id: int) :
+    """
+    بررسی می‌کند که آیا کاربر مجوز خاصی دارد یا نه
+    (با درنظر گرفتن نقش و استثناهای ALLOW/DENY)
+    """
+    session = None
+    results = ""
+    try:
+        session = SessionLocal()
+        u = aliased(UserModel)
+        up = aliased(UserPermissionModel)
+        rp = aliased(RolePermissionModel)
+        p = aliased(PermissionModel)
+        
+        query = session.query(
+            p.code,
+            Case(
+                (up.grant_type == GrantType.DENY, 0 ),
+                (up.grant_type == GrantType.ALLOW, 0 ),
+                (rp.permission_id != None, 1),
+             else_ =0).label("has_access")
+        ).select_from(p)\
+        .outerjoin(u , u.id == user_id)\
+        .outerjoin(up , and_(up.permission_id==p.id , up.user_id == u.id))\
+        .outerjoin(rp , and_(rp.permission_id == p.id , rp.role_id == u.role_id))
+        
+        results = query.all()
+        data = [{"code": code, "has_access": has_access} for code, has_access in results]
+        return {"status": True, "data": data}
+    except Exception as e:
+        print(f"Database error in save_point: {e}")
+        return {"status" : False}
+    finally:
+        if session is not None:
+            session.close()

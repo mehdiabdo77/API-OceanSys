@@ -2,28 +2,31 @@ from shelve import DbfilenameShelf
 import pandas as pd
 from sqlalchemy import text, true
 import jdatetime
+
+from app.services.permission_service import get_all_permission_user
 from ..core.base import *
 from app.schemas.user_schemas import User
 from app.models.user.user_model import UserModel
 from app.utils.security import hash_password
 
 def getUserDB(
-     user: str
+     user: int
 ):
      db = None
      try:
           db = SessionLocal()
-          query_result = db.query(UserModel).filter(UserModel.username == user).first()
+          query_result = db.query(UserModel).filter(UserModel.id == user).first()
           print(f"Query result: {query_result}")
           if query_result:
+               id_user = int(query_result.id)
                data = {
-                    "id" : query_result.id,
+                    "id" : id_user,
                      "username": query_result.username,
                      "first_name": query_result.first_name,
                      "last_name": query_result.last_name,
                      "password_hash": query_result.password_hash,
                      "is_active": query_result.is_active,
-                     "role_id": query_result.role_id,
+                     "permission": get_all_permission_user(id_user),
                      "created_at": query_result.created_at,
                      "updated_at": query_result.updated_at,
                }
