@@ -44,6 +44,38 @@ def getUserDB(
           if db is not None:
                db.close()
 
+def getAllUsersDB(
+     user: Optional[int | str]
+):
+     db = None
+     try:
+          db = SessionLocal()
+          query_result = db.query(UserModel).all()
+          users_list = []
+
+          print(f"Query result: {query_result}")
+          if query_result:
+               id_user = query_result.id
+               data = {
+                    "id" : id_user,
+                     "username": query_result.username,
+                     "first_name": query_result.first_name,
+                     "last_name": query_result.last_name,
+                     "password_hash": query_result.password_hash,
+                     "is_active": query_result.is_active,
+                     "permission": get_all_permission_user(id_user),
+                     "created_at": query_result.created_at,
+                     "updated_at": query_result.updated_at,
+               }
+               return data
+          return None
+     except Exception as e:
+          print(f"Error in getUserDB: {str(e)}")
+          return None
+     finally:
+          if db is not None:
+               db.close()
+
 def saveUserDB(
      dataUser : User
 ):
@@ -81,6 +113,36 @@ def Countuser():
           return query_result
      except Exception as e:
         print(f"Error counting users: {e}")
+     finally:
+          if db is not None:
+               db.close()
+               
+               
+def getAllUsersDB():
+     db = None
+     try:
+          db = SessionLocal()
+          query_result = db.query(UserModel).all()
+          users_list = []
+          
+          for user in query_result:
+               user_data = {
+                    "id": user.id,
+                    "username": user.username,
+                    "first_name": user.first_name,
+                    "last_name": user.last_name,
+                    "password_hash": user.password_hash,
+                    "is_active": user.is_active,
+                    "permission": get_all_permission_user(user.id),
+                    "created_at": user.created_at,
+                    "updated_at": user.updated_at,
+               }
+               users_list.append(user_data)
+               
+          return users_list
+     except Exception as e:
+          print(f"Error in getAllUsersDB: {str(e)}")
+          return []
      finally:
           if db is not None:
                db.close()
