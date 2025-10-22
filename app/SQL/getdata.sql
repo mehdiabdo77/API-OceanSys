@@ -71,6 +71,7 @@ CREATE TABLE ProductCategoryCustomer(
 
 
 CREATE TABLE CRMCustomerDescription (
+    id INT AUTO_INCREMENT PRIMARY KEY,
     customer_code INT NOT NULL,
     description_crm TEXT NOT NULL,
     is_customer_visit TINYINT(1) DEFAULT 0,   -- آیا مشتری (فروشنده) خودش ویزیت/سرکشی می‌کند؟

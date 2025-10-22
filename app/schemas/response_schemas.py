@@ -7,8 +7,7 @@ class UserModel(BaseModel):
     first_name: str
     last_name: str
     is_active : bool
-    position_id : int
-    department_id : int
+    permission : dict
 
 class VisitCreate(BaseModel):
     customer_code: int

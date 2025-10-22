@@ -1,4 +1,6 @@
+from ctypes import Union
 from shelve import DbfilenameShelf
+from typing import Optional
 import pandas as pd
 from sqlalchemy import text, true
 import jdatetime
@@ -10,15 +12,18 @@ from app.models.user.user_model import UserModel
 from app.utils.security import hash_password
 
 def getUserDB(
-     user: int
+     user: Optional[int | str]
 ):
      db = None
      try:
           db = SessionLocal()
-          query_result = db.query(UserModel).filter(UserModel.id == user).first()
+          if isinstance(user, int):
+               query_result = db.query(UserModel).filter(UserModel.id == user).first()
+          else:
+               query_result = db.query(UserModel).filter(UserModel.username == user).first()
           print(f"Query result: {query_result}")
           if query_result:
-               id_user = int(query_result.id)
+               id_user = query_result.id
                data = {
                     "id" : id_user,
                      "username": query_result.username,
