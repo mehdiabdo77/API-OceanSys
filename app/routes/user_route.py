@@ -75,11 +75,13 @@ def get_user_permission(user_id  = Depends(get_current_user)):
 
 @user_router.put("/edit_permission")
 def edit_user_permission(
-            _: str =  Depends(permission_required(Permissions.USER_MANAGE)),
+            permission = Depends(permission_required(Permissions.USER_MANAGE)),
             datas:list[PermissionEditSchemas] = Body(...)
             ):
     try:
-        for user_id,permissions in datas:
+        if "error" in permission:
+            raise HTTPException(status_code=403, detail="Access denied")
+        for user_id, permissions in datas:
             print(permissions[1])
             target_user_id = user_id[1]
             permissions_list = permissions[1] #[{'permission': COMPETITOR_PRICES, 'grant_type': 'ALLOW'}, {'permission': COMPETITOR_PRICES, 'grant_type': 'ALLOW'}]

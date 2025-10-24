@@ -13,14 +13,17 @@ customer_router = APIRouter()
 
 @customer_router.get(
     "/getCustomerData",
-    response_model=List[CustomerModel] 
+    response_model=List[CustomerModel]
     )
 def get_customer_data( user_id = Depends(permission_required(Permissions.CUSTOMER_SCAN) )):
     """
     گرفتن اطلاعات کامل مشتری 
     """
-    customerInfo = getCustomerInfo(user_id)
-    return customerInfo
+    if "error" in user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
+    else:
+        customerInfo = getCustomerInfo(user_id)
+        return customerInfo
 
 
 
@@ -30,8 +33,8 @@ def editCustomerData(
                      update_data: CustomerEdit,
                      user_id = Depends(permission_required(Permissions.CUSTOMER_SCAN))
                      ):
-    if user_id == None :
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+    if "error" in user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
     
     # ذخیره تغییرات در جدول CustomerIditTable
     result = save_customer_edit(update_data, user_id)
@@ -63,8 +66,8 @@ def disActiveCustomer(
                       disActiveData: DisActiveDescription ,
                       user_id = Depends(permission_required(Permissions.CUSTOMER_SCAN))
                       ):
-    if user_id is None :
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+    if "error" in user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
     else:
         result = sendDisActiveDescription(disActiveData , user_id)
     if "error" in result:
@@ -80,8 +83,8 @@ def ProductCategoryCustomer(
                             data: ProductCategory,
                             user_id = Depends(permission_required(Permissions.CUSTOMER_SCAN))
                             ):
-    if user_id is None :
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+    if "error" in user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
     else:
         result = sendProductCategory(data , user_id)  # ← پارامتر تصحیح شد
     if "error" in result:
@@ -97,8 +100,8 @@ def crmCustomerDescription (
                             data: CRMCustomerDescription,
                             user_id = Depends(permission_required(Permissions.CUSTOMER_SCAN))
                             ):
-    if user_id is None :
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+    if "error" in user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
     else:
         result = sendCRMCustomerDescription(data , user_id)  # ← پارامتر تصحیح شد
     visit_update = update_customer_isvisit(int(data.customer_code))
