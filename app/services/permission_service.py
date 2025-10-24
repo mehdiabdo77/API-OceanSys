@@ -97,3 +97,47 @@ def get_all_permission_user(user_id: int) :
     finally:
         if session is not None:
             session.close()
+
+# TODO باید کاری کنم اگر دسترسی هست دیتا اضافی نریزه      
+def update_user_permissions(user_id: int, permissions_list: list[dict]):
+    """
+    بروزرسانی دسترسی‌های کاربر بر اساس لیست دسترسی‌های ارسالی
+    هر آیتم در لیست شامل permission_id و grant_type است
+    """
+    db = None
+    try:
+        db = SessionLocal()
+        
+        for permission_item in permissions_list:
+            permission_id = permission_item.get("permission_id")
+            grant_type = permission_item.get("grant_type")
+            
+            # بررسی وجود دسترسی قبلی
+            existing_permission = db.query(UserPermissionModel).filter_by(
+                user_id=user_id,
+                permission_id=permission_id
+            ).first()
+            
+            if existing_permission:
+                # بروزرسانی نوع دسترسی اگر تو جدول دسترسی یوزر وجود نداشت 
+                existing_permission.grant_type = GrantType(grant_type)  # pyright: ignore[reportAttributeAccessIssue]
+                db.commit()
+            else:
+                # ایجاد دسترسی جدید
+                new_permission = UserPermissionModel(
+                    user_id=user_id,
+                    permission_id=permission_id,
+                    grant_type=GrantType(grant_type)
+                )
+                db.add(new_permission)
+                db.commit()
+                
+        return {"message": "دسترسی‌های کاربر با موفقیت بروزرسانی شد"}
+    except Exception as e:
+        if db:
+            db.rollback()
+        print(f"Error updating user permissions: {str(e)}")
+        return {"error": str(e)}
+    finally:
+        if db:
+            db.close()

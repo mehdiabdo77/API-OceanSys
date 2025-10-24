@@ -1,9 +1,11 @@
+from datetime import date
 from fastapi import APIRouter, Body, Depends , HTTPException
 from sqlalchemy import null
 from app.auth.auth_handler import get_current_user
 from app.auth.permissions import permission_required
+from app.schemas.permission_schemas import PermissionEditSchemas
 from app.schemas.response_schemas import UserModel
-from app.services.permission_service import get_all_permission_user
+from app.services.permission_service import get_all_permission_user, update_user_permissions
 from app.services.user_service import Countuser, getAllUsersDB, getUserDB , saveUserDB
 from app.core.config import ACCESS_TOKEN_EXPIRE_MINUTES
 from app.schemas.user_schemas import User
@@ -73,7 +75,23 @@ def get_user_permission(user_id  = Depends(get_current_user)):
 
 @user_router.put("/edit_permission")
 def edit_user_permission(
-            user_id: str =  Depends(permission_required(Permissions.USER_MANAGE)),
-                        data: dict = Body(...)
+            _: str =  Depends(permission_required(Permissions.USER_MANAGE)),
+            datas:list[PermissionEditSchemas] = Body(...)
             ):
-    pass
+    try:
+        for user_id,permissions in datas:
+            print(permissions[1])
+            target_user_id = user_id[1]
+            permissions_list = permissions[1] #[{'permission': COMPETITOR_PRICES, 'grant_type': 'ALLOW'}, {'permission': COMPETITOR_PRICES, 'grant_type': 'ALLOW'}]
+        
+            if not target_user_id or not permissions_list:
+                raise HTTPException(status_code=400, detail="اطلاعات ناقص است")
+            
+            result = update_user_permissions(int(target_user_id), permissions_list)
+        
+            if "error" in result:
+                raise HTTPException(status_code=400, detail=result["error"])
+            
+            return {"success": True, "message": result["message"]}
+    except Exception as e:
+            raise HTTPException(status_code=500, detail=f"خطا در بروزرسانی دسترسی‌ها: {str(e)}")
