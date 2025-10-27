@@ -1,4 +1,5 @@
 from operator import and_
+from fastapi import HTTPException
 from sqlalchemy import Case, false
 from app.core.base import SessionLocal 
 from sqlalchemy.orm import aliased, query
@@ -6,6 +7,8 @@ from app.models.user.user_model import UserModel
 from app.models.user.permission_model import PermissionModel
 from app.models.user.role_permission_model import RolePermissionModel
 from app.models.user.user_permission_model import UserPermissionModel, GrantType
+from sqlalchemy import case, literal
+from sqlalchemy.sql import expression
 
 def user_has_permission( user_id: int, permission_code: str) -> bool:
     """
@@ -99,39 +102,82 @@ def get_all_permission_user(user_id: int) :
             session.close()
 
 # TODO باید کاری کنم اگر دسترسی هست دیتا اضافی نریزه      
-def update_user_permissions(user_id: int, permissions_list: list[dict]):
+def update_user_permissions(
+    user_id: int,
+    permissions_list: list[dict] # [{'permission': 'CUSTOMER_SCAN', 'grant_type': 'ALLOW'}, {'permission': 'CUSTOMER_REGISTER', 'grant_type': 'DENY'}]
+    ):
     """
     بروزرسانی دسترسی‌های کاربر بر اساس لیست دسترسی‌های ارسالی
-    هر آیتم در لیست شامل permission_id و grant_type است
+    هر آیتم در لیست شامل permission و grant_type است
     """
     db = None
     try:
         db = SessionLocal()
+        # دریافت نقش کاربر
+        user = db.query(UserModel).filter(UserModel.id == user_id).first()
+        if not user:
+            return {"error": "کاربر یافت نشد"}
+        
+        # گرفتن نقش کاربر بدون بررسی دسترسی خاص
+        quary = db.query(
+                PermissionModel.code,
+                case(
+                    (RolePermissionModel.permission_id != None, literal("ALLOW")),
+                    else_=literal("DENY")
+                )
+            )\
+            .select_from(PermissionModel)\
+            .outerjoin(
+                RolePermissionModel,
+                expression.and_(
+                    RolePermissionModel.permission_id == PermissionModel.id,
+                    RolePermissionModel.role_id == user.role_id
+                )
+            )\
+            .all()
+
+        # خروجی من یه لیست از دیکشنری
+        existing_permission_role =  {
+            p : has_access
+            for p, has_access in quary
+        }
         
         for permission_item in permissions_list:
-            permission_id = permission_item.get("permission_id")
+            permission = permission_item.get("permission")
             grant_type = permission_item.get("grant_type")
             
+            if not permission or not grant_type:
+                return {"error": str(f"اطلاعات دسترسی {permission} ناقص است")}
+                
+            # دریافت شناسه دسترسی
+            permission_record = db.query(PermissionModel.id).filter(PermissionModel.code == permission).first()
+            if not permission_record:
+                return {"error": str(f"دسترسی {permission} یافت نشد")}
+                
+            permission_id = permission_record[0]  # استخراج مقدار ID از نتیجه کوئری
+            
             # بررسی وجود دسترسی قبلی
-            existing_permission = db.query(UserPermissionModel).filter_by(
+            existing_perm = db.query(UserPermissionModel).filter_by(
                 user_id=user_id,
                 permission_id=permission_id
             ).first()
             
-            if existing_permission:
-                # بروزرسانی نوع دسترسی اگر تو جدول دسترسی یوزر وجود نداشت 
-                existing_permission.grant_type = GrantType(grant_type)  # pyright: ignore[reportAttributeAccessIssue]
-                db.commit()
-            else:
-                # ایجاد دسترسی جدید
-                new_permission = UserPermissionModel(
-                    user_id=user_id,
-                    permission_id=permission_id,
-                    grant_type=GrantType(grant_type)
-                )
-                db.add(new_permission)
-                db.commit()
-                
+            # از دیکشنری که ساخته بودم دسترسی میگیرم 
+            role_access = existing_permission_role.get(permission)
+                    
+            if role_access != grant_type:
+                if existing_perm:
+                    existing_perm.grant_type = GrantType[grant_type]  # pyright: ignore[reportAttributeAccessIssue]
+                else:
+                    db.add(UserPermissionModel(
+                        user_id=user_id,
+                        permission_id=permission_id,
+                        grant_type=GrantType(grant_type)
+                    ))
+            else  :
+                if existing_perm:
+                    db.delete(existing_perm)
+        db.commit()
         return {"message": "دسترسی‌های کاربر با موفقیت بروزرسانی شد"}
     except Exception as e:
         if db:

@@ -1,4 +1,5 @@
 from datetime import date
+from typing import List
 from fastapi import APIRouter, Body, Depends , HTTPException
 from sqlalchemy import null
 from app.auth.auth_handler import get_current_user
@@ -73,27 +74,37 @@ def get_user_permission(user_id  = Depends(get_current_user)):
     else:
         raise HTTPException(status_code=400, detail="Error in getting permissions")
 
+
 @user_router.put("/edit_permission")
 def edit_user_permission(
             permission = Depends(permission_required(Permissions.USER_MANAGE)),
-            datas:list[PermissionEditSchemas] = Body(...)
+            datas: List[PermissionEditSchemas] = Body(...)
             ):
     try:
         if "error" in permission:
             raise HTTPException(status_code=403, detail="Access denied")
-        for user_id, permissions in datas:
-            print(permissions[1])
-            target_user_id = user_id[1]
-            permissions_list = permissions[1] #[{'permission': COMPETITOR_PRICES, 'grant_type': 'ALLOW'}, {'permission': COMPETITOR_PRICES, 'grant_type': 'ALLOW'}]
         
+        results = []
+        for data in datas:
+            target_user_id = data.user_id
+            permissions_list = data.permissions
+            
             if not target_user_id or not permissions_list:
                 raise HTTPException(status_code=400, detail="اطلاعات ناقص است")
             
-            result = update_user_permissions(int(target_user_id), permissions_list)
-        
+            permissions_dict_list = [] # [{'permission': 'CUSTOMER_SCAN', 'grant_type': 'ALLOW'}, {'permission': 'CUSTOMER_REGISTER', 'grant_type': 'DENY'}]
+            for perm in permissions_list:
+                permissions_dict_list.append({
+                    "permission": perm.permission,
+                    "grant_type": perm.grant_type
+                })
+            result = update_user_permissions(int(target_user_id), permissions_dict_list)
             if "error" in result:
-                raise HTTPException(status_code=400, detail=result["error"])
-            
-            return {"success": True, "message": result["message"]}
+                results.append({"user_id": target_user_id, "status": "error", "message": result["error"]})
+            else:
+                results.append({"user_id": target_user_id, "status": "success", "message": result["message"]})
+        
+        return {"success": True, "results": results}
     except Exception as e:
-            raise HTTPException(status_code=500, detail=f"خطا در بروزرسانی دسترسی‌ها: {str(e)}")
+        print(f"Error in edit_user_permission: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"خطا در بروزرسانی دسترسی‌ها: {str(e)}")

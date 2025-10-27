@@ -13,7 +13,7 @@ def permission_required(permission_code : str):
                      status_code=status.HTTP_403_FORBIDDEN,
                      detail=f"Access denied: missing permission '{permission_code}'"
                  )
-               return user_id
+               return user_id # PermissionCheck(has_access=True, user_id=current_user.id)
           except Exception as e:
                print(f"Database error in save_point: {e}")
                return {"error": f"Failed to save point: {str(e)}"}

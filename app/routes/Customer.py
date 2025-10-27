@@ -19,6 +19,7 @@ def get_customer_data( user_id = Depends(permission_required(Permissions.CUSTOME
     """
     گرفتن اطلاعات کامل مشتری 
     """
+    print(user_id)
     if "error" in user_id:
         raise HTTPException(status_code=403, detail="Access denied")
     else:
