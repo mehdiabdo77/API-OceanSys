@@ -19,8 +19,7 @@ def get_customer_data( user_id = Depends(permission_required(Permissions.CUSTOME
     """
     گرفتن اطلاعات کامل مشتری 
     """
-    print(user_id)
-    if "error" in user_id:
+    if isinstance(user_id, dict) and "error" in user_id:
         raise HTTPException(status_code=403, detail="Access denied")
     else:
         customerInfo = getCustomerInfo(user_id)
@@ -34,11 +33,11 @@ def editCustomerData(
                      update_data: CustomerEdit,
                      user_id = Depends(permission_required(Permissions.CUSTOMER_SCAN))
                      ):
-    if "error" in user_id:
+    if isinstance(user_id, dict) and "error" in user_id:
         raise HTTPException(status_code=403, detail="Access denied")
     
     # ذخیره تغییرات در جدول CustomerIditTable
-    result = save_customer_edit(update_data, user_id)
+    result = save_customer_edit(update_data, user_id if not isinstance(user_id, dict) else user_id.get("user_id", 0))
     
     if "error" in result:
         raise HTTPException(status_code=400, detail=result["error"])
@@ -67,10 +66,10 @@ def disActiveCustomer(
                       disActiveData: DisActiveDescription ,
                       user_id = Depends(permission_required(Permissions.CUSTOMER_SCAN))
                       ):
-    if "error" in user_id:
+    if isinstance(user_id, dict) and "error" in user_id:
         raise HTTPException(status_code=403, detail="Access denied")
     else:
-        result = sendDisActiveDescription(disActiveData , user_id)
+        result = sendDisActiveDescription(disActiveData , user_id if not isinstance(user_id, dict) else user_id.get("user_id", 0))
     if "error" in result:
         raise HTTPException(status_code=400, detail=result["error"])
     visit_update = update_customer_isvisit(int(disActiveData.customer_code))
@@ -84,10 +83,10 @@ def ProductCategoryCustomer(
                             data: ProductCategory,
                             user_id = Depends(permission_required(Permissions.CUSTOMER_SCAN))
                             ):
-    if "error" in user_id:
+    if isinstance(user_id, dict) and "error" in user_id:
         raise HTTPException(status_code=403, detail="Access denied")
     else:
-        result = sendProductCategory(data , user_id)  # ← پارامتر تصحیح شد
+            result = sendProductCategory(data, user_id if not isinstance(user_id, dict) else user_id.get("user_id", 0))
     if "error" in result:
         raise HTTPException(status_code=400, detail=result["error"])
     visit_update = update_customer_isvisit(int(data.customer_code))
@@ -101,10 +100,10 @@ def crmCustomerDescription (
                             data: CRMCustomerDescription,
                             user_id = Depends(permission_required(Permissions.CUSTOMER_SCAN))
                             ):
-    if "error" in user_id:
+    if isinstance(user_id, dict) and "error" in user_id:
         raise HTTPException(status_code=403, detail="Access denied")
     else:
-        result = sendCRMCustomerDescription(data , user_id)  # ← پارامتر تصحیح شد
+        result = sendCRMCustomerDescription(data , user_id if not isinstance(user_id, dict) else user_id.get("user_id", 0))  
     visit_update = update_customer_isvisit(int(data.customer_code))
     if "error" in visit_update:
         raise HTTPException(status_code=400, detail=visit_update["error"])

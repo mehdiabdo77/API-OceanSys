@@ -36,7 +36,7 @@ def register_user(
             data: User,
             user_id: str =  Depends(permission_required(Permissions.USER_MANAGE))
             ):
-    if user_id is not null :
+    if isinstance(user_id, dict) and "error" in user_id:
         result = saveUserDB(data)
         return {
             "success": True,
@@ -61,7 +61,7 @@ def get_all_user_data(
         user_id: str =  Depends(permission_required(Permissions.USER_MANAGE) )
         ):
     users = getAllUsersDB()
-    if not users:
+    if isinstance(users, dict) and "error" in users:
         raise HTTPException(status_code=404, detail="User not found")
     return users
 
@@ -74,14 +74,13 @@ def get_user_permission(user_id  = Depends(get_current_user)):
     else:
         raise HTTPException(status_code=400, detail="Error in getting permissions")
 
-
 @user_router.put("/edit_permission")
 def edit_user_permission(
             permission = Depends(permission_required(Permissions.USER_MANAGE)),
             datas: List[PermissionEditSchemas] = Body(...)
             ):
     try:
-        if "error" in permission:
+        if isinstance(permission, dict) and "error" in permission:
             raise HTTPException(status_code=403, detail="Access denied")
         
         results = []
