@@ -1,12 +1,13 @@
+from ast import Try
 from datetime import date
 from typing import List
 from fastapi import APIRouter, Body, Depends , HTTPException
 from sqlalchemy import null
 from app.auth.auth_handler import get_current_user
 from app.auth.permissions import permission_required
-from app.schemas.permission_schemas import PermissionEditSchemas
+from app.schemas.permission_schemas import PermissionUserEditSchemas
 from app.schemas.response_schemas import UserModel
-from app.services.permission_service import get_all_permission_user, update_user_permissions
+from app.services.permission_service import get_all_permission_user, get_role, update_user_permissions
 from app.services.user_service import Countuser, getAllUsersDB, getUserDB , saveUserDB
 from app.core.config import ACCESS_TOKEN_EXPIRE_MINUTES
 from app.schemas.user_schemas import User
@@ -74,10 +75,10 @@ def get_user_permission(user_id  = Depends(get_current_user)):
     else:
         raise HTTPException(status_code=400, detail="Error in getting permissions")
 
-@user_router.put("/edit_permission")
+@user_router.put("/edit_permission_user")
 def edit_user_permission(
             permission = Depends(permission_required(Permissions.USER_MANAGE)),
-            datas: List[PermissionEditSchemas] = Body(...)
+            datas: List[PermissionUserEditSchemas] = Body(...)
             ):
     try:
         if isinstance(permission, dict) and "error" in permission:
@@ -107,3 +108,21 @@ def edit_user_permission(
     except Exception as e:
         print(f"Error in edit_user_permission: {str(e)}")
         raise HTTPException(status_code=500, detail=f"خطا در بروزرسانی دسترسی‌ها: {str(e)}")
+
+@user_router.get("/get_role_list")
+def get_role_list(
+            permission = Depends(permission_required(Permissions.USER_MANAGE)),
+            ):
+    try:
+        if isinstance(permission, dict) and "error" in permission:
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        results = get_role()
+        print(f"my role : {results}")
+        return {"success": True, "results": results}
+        
+    except Exception as e:
+        print(f"Error in edit_user_permission: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"خطا در بروزرسانی دسترسی‌ها: {str(e)}")
+    
+    

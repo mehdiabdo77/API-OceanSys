@@ -108,6 +108,7 @@ left join role_permission_tbl as rp
 
 
 
+-- بررسی دسترسی های کاربر
 SELECT 
     p.code,
     CASE
@@ -121,4 +122,34 @@ left join role_permission_tbl as rp
     on rp.permission_id = p.id and rp.role_id = u.role_id
 
 
-SELECT p.id from permission_tbl as p WHERE code = "USER_MANAGE"
+-- SELECT 
+--     p.code,
+--     CASE 
+--         WHEN rp.permission_id is not null THEN  1
+--         ELSE  0
+--     END as has_access
+-- from permission_tbl as p
+-- LEFT join role_permission_tbl as rp on p.id = rp.permission_id
+-- LEFT JOIN role_tbl AS r 
+--     ON r.id = rp.role_id 
+-- WHERE r.name = 'admin';
+
+SELECT * from role_tbl
+
+SELECT * from permission_tbl
+
+
+SELECT
+  p.code,
+  CASE 
+    WHEN EXISTS (
+      SELECT 1
+      FROM role_permission_tbl rp
+      JOIN role_tbl r ON r.id = rp.role_id
+      WHERE rp.permission_id = p.id
+        AND r.name = 'SalesManager'
+    ) THEN 1
+    ELSE 0
+  END AS has_access
+FROM permission_tbl p
+ORDER BY p.code;

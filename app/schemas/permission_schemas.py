@@ -5,7 +5,8 @@ class PermissionItem(BaseModel):
     permission: str
     grant_type: str 
 
-class PermissionEditSchemas(BaseModel):
+
+class PermissionUserEditSchemas(BaseModel):
     user_id: int = Field(..., examples=[1])
     permissions: List[PermissionItem] = Field(
         ...,

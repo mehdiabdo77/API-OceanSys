@@ -3,6 +3,7 @@ from fastapi import HTTPException
 from sqlalchemy import Case, false
 from app.core.base import SessionLocal 
 from sqlalchemy.orm import aliased, query
+from app.models.user.role_model import RoleModel
 from app.models.user.user_model import UserModel
 from app.models.user.permission_model import PermissionModel
 from app.models.user.role_permission_model import RolePermissionModel
@@ -187,3 +188,21 @@ def update_user_permissions(
     finally:
         if db:
             db.close()
+            
+            
+def get_role():
+    db = None
+    try:
+        db = SessionLocal()
+        role = db.query(RoleModel).all()
+        print(role)
+        return role
+    except Exception as e:
+        if db:
+            db.rollback()
+        print(f"Error updating user permissions: {str(e)}")
+        return {"error": str(e)}
+    finally:
+        if db:
+            db.close()
+    
