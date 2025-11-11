@@ -5,9 +5,9 @@ from fastapi import APIRouter, Body, Depends , HTTPException
 from sqlalchemy import null
 from app.auth.auth_handler import get_current_user
 from app.auth.permissions import permission_required
-from app.schemas.permission_schemas import PermissionUserEditSchemas
+from app.schemas.permission_schemas import PermissionRoleEditSchemas, PermissionUserEditSchemas
 from app.schemas.response_schemas import UserModel
-from app.services.permission_service import get_all_permission_user, get_role, update_user_permissions
+from app.services.permission_service import get_all_permission_user, get_role, update_role_permissions, update_user_permissions
 from app.services.user_service import Countuser, getAllUsersDB, getUserDB , saveUserDB
 from app.core.config import ACCESS_TOKEN_EXPIRE_MINUTES
 from app.schemas.user_schemas import User
@@ -86,7 +86,7 @@ def edit_user_permission(
         
         results = []
         for data in datas:
-            target_user_id = data.user_id
+            target_user_id = data.identifier
             permissions_list = data.permissions
             
             if not target_user_id or not permissions_list:
@@ -109,6 +109,50 @@ def edit_user_permission(
         print(f"Error in edit_user_permission: {str(e)}")
         raise HTTPException(status_code=500, detail=f"خطا در بروزرسانی دسترسی‌ها: {str(e)}")
 
+
+
+# TODO باید درست بشه    
+@user_router.put("/edit_permission_role")
+def edit_role_permission(
+            permission = Depends(permission_required(Permissions.USER_MANAGE)),
+            datas: List[PermissionRoleEditSchemas] = Body(...)
+            ):
+    try:
+        if isinstance(permission, dict) and "error" in permission:
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        results = []
+        for data in datas:
+            arget_role = data.identifier
+            permissions_list = data.permissions
+            
+            if not arget_role or not permissions_list:
+                raise HTTPException(status_code=400, detail="اطلاعات ناقص است")
+            
+            permissions_dict_list = []
+            
+            for perm in permissions_list:
+                permissions_dict_list.append({
+                    "permission": perm.permission,
+                    "grant_type": perm.grant_type
+                })
+                
+            result = update_role_permissions(arget_role, permissions_dict_list)
+            
+            # if "error" in result:
+            #     results.append({"role_id": target_role_id, "status": "error", "message": result["error"]})
+            # else:
+            #     results.append({"role_id": target_role_id, "status": "success", "message": result["message"]})
+            
+            # return {"success": True, "results": results}
+            
+                
+        
+    except Exception as e:
+        print(f"Error in edit_role_permission: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"خطا در بروزرسانی دسترسی‌ها: {str(e)}")
+    
+    
 @user_router.get("/get_role_list")
 def get_role_list(
             permission = Depends(permission_required(Permissions.USER_MANAGE)),
@@ -123,6 +167,6 @@ def get_role_list(
         
     except Exception as e:
         print(f"Error in edit_user_permission: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"خطا در بروزرسانی دسترسی‌ها: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"خطا در  دریافت اطلاعت نقش ها: {str(e)}")
     
     

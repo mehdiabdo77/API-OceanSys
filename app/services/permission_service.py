@@ -120,7 +120,7 @@ def update_user_permissions(
             return {"error": "کاربر یافت نشد"}
         
         # گرفتن نقش کاربر بدون بررسی دسترسی خاص
-        quary = db.query(
+        quaryresult = db.query(
                 PermissionModel.code,
                 case(
                     (RolePermissionModel.permission_id != None, literal("ALLOW")),
@@ -140,7 +140,7 @@ def update_user_permissions(
         # خروجی من یه لیست از دیکشنری
         existing_permission_role =  {
             p : has_access
-            for p, has_access in quary
+            for p, has_access in quaryresult
         }
         
         for permission_item in permissions_list:
@@ -189,6 +189,85 @@ def update_user_permissions(
         if db:
             db.close()
             
+
+def update_role_permissions(
+    role: str,
+    permissions_list: list[dict] # [{'permission': 'CUSTOMER_SCAN', 'grant_type': 'ALLOW'}, {'permission': 'CUSTOMER_REGISTER', 'grant_type': 'DENY'}]
+    ):
+    db = SessionLocal();
+    
+    try:
+        db = SessionLocal()
+        role = db.query(RoleModel).filter_by(name=role).first()
+        if not role:
+            return {"error": "نقش یافت نشد"}
+
+        # دریافت همه‌ی دسترسی‌ها و وضعیتشان برای این نقش
+        quaryresult = (
+            db.query(
+                PermissionModel.code,
+                case(
+                    (
+                        db.query(RolePermissionModel)
+                        .join(RoleModel, RoleModel.id == RolePermissionModel.role_id)
+                        .filter(
+                            RolePermissionModel.permission_id == PermissionModel.id,
+                            RoleModel.name == role.name
+                        )
+                        .exists(),
+                        literal("ALLOW")
+                    ),
+                    else_=literal("DENY")
+                ).label("has_access")
+            )
+            .select_from(PermissionModel)
+            .order_by(PermissionModel.code)
+        )
+
+        results = quaryresult.all() #[('COMPETITOR_PRICES', 1), ('CUSTOMER_SCAN', 1), ('FINANCE_REPORTS', 0), ('NEW_CUSTOMER', 1), ('UPLOAD_DATA', 1), ('USER_MANAGE', 0), ('VIEW_DASHBOARD', 1)]
+        
+        existing_permission_role =  {
+            p : has_access
+            for p, has_access in results
+        }
+        
+        # فیلد ادیت 
+        for permission_item in permissions_list:
+            permission = permission_item.get("permission")
+            grant_type = permission_item.get("grant_type")
+            
+            if not permission or not grant_type:
+                return {"error": str(f"اطلاعات دسترسی {permission} ناقص است")}
+                
+            # دریافت شناسه دسترسی
+            permission_record = db.query(PermissionModel.id).filter(PermissionModel.code == permission).first()
+            if not permission_record:
+                return {"error": str(f"دسترسی {permission} یافت نشد")}
+            
+            permission_role_filter = db.query(RolePermissionModel).filter_by(
+                role_id=role.id,
+                permission_id=permission_record[0]
+            ).first()
+        
+            perCheack = existing_permission_role.get(permission)
+            
+            if grant_type == "ALLOW" and not permission_role_filter:
+                db.add(RolePermissionModel(role_id=role.id, permission_id=permission_record[0]))
+            elif grant_type == "DENY" and permission_role_filter:
+                db.delete(permission_role_filter)   
+        
+        db.commit()
+        data = [{"code": code, "has_access": bool(has_access)} for code, has_access in results]
+        return {"status": True, "data": data}
+
+    except Exception as e:
+        if db:
+            db.rollback()
+        print(f"Error fetching role permissions: {str(e)}")
+        return {"error": str(e)}
+    finally:
+        if db:
+            db.close()
             
 def get_role():
     db = None
