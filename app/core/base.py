@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session, relationship, sessionmaker
 db_config = {
     'host': '127.0.0.1',  
     'user': 'root',   
-    'password': '58003695', 
+    'password': '580003695', 
     'database': 'ocean', 
     'port': 3306        
 }

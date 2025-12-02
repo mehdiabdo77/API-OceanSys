@@ -1,3 +1,4 @@
+CREATE DATABASE ocean;
 
 CREATE TABLE visit_reports (
     id int AUTO_INCREMENT PRIMARY KEY,
@@ -175,6 +176,26 @@ WHERE v.`visit_Date` = (
     SELECT MAX(v.`visit_Date`) 
     FROM customer
 );
+
+
+CREATE TABLE customer (
+  customer_code INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  customer_name VARCHAR(150) NOT NULL,
+  customer_board VARCHAR(150) NOT NULL,
+  national_code VARCHAR(20),
+  area VARCHAR(20) NOT NULL,
+  zone VARCHAR(20) NOT NULL,
+  route VARCHAR(20) NOT NULL,
+  latitude DECIMAL(9,6),
+  longitude DECIMAL(9,6),
+  status VARCHAR(10) NOT NULL,
+  address TEXT,
+  phone VARCHAR(11),
+  mobile VARCHAR(11),
+  mobile2 VARCHAR(11),
+  postal_code VARCHAR(12),
+  image_address TEXT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 INSERT INTO visit_reports(customer_id ,user_id , `visit_Date` )

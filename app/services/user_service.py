@@ -1,7 +1,6 @@
 from ctypes import Union
 from shelve import DbfilenameShelf
 from typing import Optional
-import pandas as pd
 from sqlalchemy import text, true
 import jdatetime
 
