@@ -1,3 +1,16 @@
-SECRET_KEY = 'f8a3d7e2c5b9016f4e8d2a7b3c6e9d1f0a4b5c7d8e9f2a1b3c4d5e6f7a8b9c0'
-ALGORITHM = 'HS256'
-ACCESS_TOKEN_EXPIRE_MINUTES = 9000
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 9000))
+
+DB_DRIVER = os.getenv("DB_DRIVER", "ODBC Driver 17 for SQL Server")
+DB_SERVER = os.getenv("DB_SERVER", "127.0.0.1")
+DB_PORT = os.getenv("DB_PORT", "1433")
+DB_DATABASE = os.getenv("DB_DATABASE", "ocean")
+DB_USER = os.getenv("DB_USER", "sa")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+

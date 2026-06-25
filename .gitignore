@@ -28,3 +28,6 @@ ENV/
 
 # Also ignore in subdirectories
 */__pycache__/
+
+# Environment variables
+.env
