@@ -17,9 +17,9 @@ def create_database_if_not_exists():
         # Check if database exists
         result = conn.execute(text(f"SELECT name FROM sys.databases WHERE name = N'{DB_DATABASE}'"))
         if not result.fetchone():
-            # Create database if it doesn't exist
-            conn.execute(text(f"CREATE DATABASE [{DB_DATABASE}]"))
-            print(f"Database '{DB_DATABASE}' created successfully!")
+            # Create database with Persian-friendly collation
+            conn.execute(text(f"CREATE DATABASE [{DB_DATABASE}] COLLATE Persian_100_CI_AI"))
+            print(f"Database '{DB_DATABASE}' created successfully with Persian collation!")
         else:
             print(f"Database '{DB_DATABASE}' already exists!")
 
