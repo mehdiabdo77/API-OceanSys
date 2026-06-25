@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Enum
+from sqlalchemy import Column, Integer, String, ForeignKey, Enum, UniqueConstraint
 from sqlalchemy.orm import relationship
 from app.core.base import Base
 from app.models.user.permission_model import PermissionModel  # اضافه کردن این import
@@ -20,5 +20,5 @@ class UserPermissionModel(Base):
     permission = relationship(PermissionModel, back_populates="users")  # تغییر به استفاده مستقیم از کلاس
 
     __table_args__ = (
-        {'unique_constraint': ['user_id', 'permission_id']}
+        UniqueConstraint('user_id', 'permission_id', name='uq_user_permission'),
     )

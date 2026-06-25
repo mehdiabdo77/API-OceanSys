@@ -1,12 +1,20 @@
 from fastapi import FastAPI
+from contextlib import asynccontextmanager
 from app.routes.auth_router import auth_router
 from app.routes.user_route import  user_router
 from app.routes.Customer import  customer_router
 from app.routes.point import point_router
 from app.routes.visit import visit_router
+from app.core.db_setup import initialize_database
 
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    initialize_database()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 app.include_router(auth_router)
 app.include_router(user_router)

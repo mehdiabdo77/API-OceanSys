@@ -31,3 +31,6 @@ ENV/
 
 # Environment variables
 .env
+
+# SQL scripts folder
+/app/SQL/

@@ -11,3 +11,36 @@ engine = create_engine(connection_string)
 Base = declarative_base()
 SessionLocal = sessionmaker(autoflush=False , autocommit = False , bind=engine)
 
+# Import all models to register them with Base.metadata
+from app.models import (
+    UserModel,
+    RoleModel,
+    PermissionModel,
+    RolePermissionModel,
+    UserPermissionModel,
+    CustomerModel,
+    PointModel,
+    DisActiveDescriptionModel,
+    CRMCustomerDescriptionModel,
+    CustomerIditModel,
+    ProductCategoryCustomerModel,
+    VisitReportModel
+)
+
+# Even though we don't use these variables directly, importing them ensures
+# the models are registered with Base.metadata so create_all() works correctly
+_ = (
+    UserModel,
+    RoleModel,
+    PermissionModel,
+    RolePermissionModel,
+    UserPermissionModel,
+    CustomerModel,
+    PointModel,
+    DisActiveDescriptionModel,
+    CRMCustomerDescriptionModel,
+    CustomerIditModel,
+    ProductCategoryCustomerModel,
+    VisitReportModel
+)
+

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, ForeignKey
+from sqlalchemy import Column, Integer, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 from app.core.base import Base
 
@@ -14,5 +14,5 @@ class RolePermissionModel(Base):
    permission = relationship("PermissionModel", back_populates="roles")
 
    __table_args__ = (
-        {'unique_constraint': ['role_id', 'permission_id']}
+        UniqueConstraint('role_id', 'permission_id', name='uq_role_permission'),
     )
