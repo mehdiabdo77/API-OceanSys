@@ -4,7 +4,7 @@ from app.auth.auth_handler import get_current_user
 from app.services.point_service import save_point
 
 
-point_router = APIRouter()
+point_router = APIRouter(tags=['point'])
 
 @point_router.post("/point")
 def point(data: Point, username: str = Depends(get_current_user)):

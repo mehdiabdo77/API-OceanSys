@@ -6,7 +6,7 @@ from app.services.customer_service import getCustomerInfo
 from app.schemas.customer_schemas import CustomerModel 
 from app.core.config import ACCESS_TOKEN_EXPIRE_MINUTES
 
-new_customer_router = APIRouter()
+new_customer_router = APIRouter(tags=['new_customer'])
 
 
 @new_customer_router.get(

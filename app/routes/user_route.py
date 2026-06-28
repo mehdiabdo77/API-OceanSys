@@ -13,7 +13,7 @@ from app.core.config import ACCESS_TOKEN_EXPIRE_MINUTES
 from app.schemas.user_schemas import User
 from app.utils.constans import Permissions
 
-user_router = APIRouter()
+user_router = APIRouter(tags=['user'])
 
 @user_router.post("/setup-first-user")
 def register_first_user(data : User):

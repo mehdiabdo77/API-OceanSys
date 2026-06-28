@@ -6,7 +6,7 @@ from app.services.user_service import getUserDB
 from app.utils.security import verify_password
 from app.core.config import ACCESS_TOKEN_EXPIRE_MINUTES
 
-auth_router = APIRouter()
+auth_router = APIRouter(tags=['auth'])
 
 @auth_router.post("/token")
 def login(form_data: OAuth2PasswordRequestForm = Depends()):

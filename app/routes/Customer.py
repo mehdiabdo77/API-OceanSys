@@ -8,12 +8,12 @@ from app.schemas.customer_schemas import CustomerModel , CustomerEdit, DisActive
 from app.core.config import ACCESS_TOKEN_EXPIRE_MINUTES
 from app.utils.constans import Permissions
 
-customer_router = APIRouter()
+customer_router = APIRouter(tags=['customer'])
 
 
 @customer_router.get(
     "/getCustomerData",
-    response_model=List[CustomerModel]
+    # response_model=List[CustomerModel]
     )
 def get_customer_data( user_id = Depends(permission_required(Permissions.CUSTOMER_SCAN) )):
     """

@@ -33,6 +33,7 @@ def getCustomerInfo(user_id):
                 CustomerModel.mobile,
                 CustomerModel.mobile2,
                 CustomerModel.postal_code,
+                VisitReportModel.visit_status,
             )
             .join(VisitReportModel, VisitReportModel.customer_id == CustomerModel.customer_code)
             .join(UserModel, UserModel.id == VisitReportModel.user_id)

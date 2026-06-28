@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from typing import List, Dict
 from app.services.route_service import get_routes , add_user_route
 
-visit_router = APIRouter()
+visit_router = APIRouter(tags=['visit'])
 
 
 @visit_router.get("/routes" , response_model =List | None)
