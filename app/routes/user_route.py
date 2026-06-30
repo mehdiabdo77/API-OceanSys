@@ -17,6 +17,15 @@ user_router = APIRouter(tags=['user'])
 
 @user_router.post("/setup-first-user")
 def register_first_user(data : User):
+    """
+    ایجاد کاربر اول سیستم
+
+    Create the first user of the system
+    
+    فقط زمانی کار می‌کند که سیستم هیچ کاربری نداشته باشد
+
+    Only works when the system has no users yet
+    """
     count = Countuser()
     if isinstance(count, int) and count == 0:
         result = saveUserDB(data)
@@ -37,6 +46,15 @@ def register_user(
             data: User,
             user_id: str =  Depends(permission_required(Permissions.USER_MANAGE))
             ):
+    """
+    ثبت کاربر جدید
+
+    Register a new user
+    
+    نیاز به دسترسی USER_MANAGE دارد
+
+    Requires USER_MANAGE permission
+    """
     if isinstance(user_id, dict) and "error" in user_id:
         result = saveUserDB(data)
         return {
@@ -51,6 +69,15 @@ def register_user(
 
 @user_router.get("/getUserdata", response_model=UserModel)
 def get_user_data(user_id  = Depends(get_current_user)):
+    """
+    دریافت اطلاعات کاربر فعلی
+
+    Get current user information
+    
+    نیاز به احراز هویت دارد
+
+    Requires authentication
+    """
     user = getUserDB(user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -61,6 +88,15 @@ def get_user_data(user_id  = Depends(get_current_user)):
 def get_all_user_data(
         user_id: str =  Depends(permission_required(Permissions.USER_MANAGE) )
         ):
+    """
+    دریافت لیست تمام کاربران
+
+    Get list of all users
+    
+    نیاز به دسترسی USER_MANAGE دارد
+
+    Requires USER_MANAGE permission
+    """
     users = getAllUsersDB()
     if isinstance(users, dict) and "error" in users:
         raise HTTPException(status_code=404, detail="User not found")
@@ -69,6 +105,15 @@ def get_all_user_data(
 
 @user_router.post("/get_permission")
 def get_user_permission(user_id  = Depends(get_current_user)):
+    """
+    دریافت دسترسی‌های کاربر فعلی
+
+    Get current user permissions
+    
+    نیاز به احراز هویت دارد
+
+    Requires authentication
+    """
     result = get_all_permission_user(user_id)
     if result["status"] == True:
         return result ['data']
@@ -80,6 +125,15 @@ def edit_user_permission(
             permission = Depends(permission_required(Permissions.USER_MANAGE)),
             datas: List[PermissionUserEditSchemas] = Body(...)
             ):
+    """
+    ویرایش دسترسی‌های یک یا چند کاربر
+
+    Edit permissions of one or more users
+    
+    نیاز به دسترسی USER_MANAGE دارد
+
+    Requires USER_MANAGE permission
+    """
     try:
         if isinstance(permission, dict) and "error" in permission:
             raise HTTPException(status_code=403, detail="Access denied")
@@ -111,22 +165,30 @@ def edit_user_permission(
 
 
 
-# TODO باید درست بشه    
 @user_router.put("/edit_permission_role")
 def edit_role_permission(
             permission = Depends(permission_required(Permissions.USER_MANAGE)),
             datas: List[PermissionRoleEditSchemas] = Body(...)
             ):
+    """
+    ویرایش دسترسی‌های یک یا چند نقش
+
+    Edit permissions of one or more roles
+    
+    نیاز به دسترسی USER_MANAGE دارد
+
+    Requires USER_MANAGE permission
+    """
     try:
         if isinstance(permission, dict) and "error" in permission:
             raise HTTPException(status_code=403, detail="Access denied")
         
         results = []
         for data in datas:
-            arget_role = data.identifier
+            target_role = data.identifier
             permissions_list = data.permissions
             
-            if not arget_role or not permissions_list:
+            if not target_role or not permissions_list:
                 raise HTTPException(status_code=400, detail="اطلاعات ناقص است")
             
             permissions_dict_list = []
@@ -137,16 +199,14 @@ def edit_role_permission(
                     "grant_type": perm.grant_type
                 })
                 
-            result = update_role_permissions(arget_role, permissions_dict_list)
+            result = update_role_permissions(target_role, permissions_dict_list)
             
-            # if "error" in result:
-            #     results.append({"role_id": target_role_id, "status": "error", "message": result["error"]})
-            # else:
-            #     results.append({"role_id": target_role_id, "status": "success", "message": result["message"]})
-            
-            # return {"success": True, "results": results}
-            
-                
+            if "error" in result:
+                results.append({"role_name": target_role, "status": "error", "message": result["error"]})
+            else:
+                results.append({"role_name": target_role, "status": "success", "message": "دسترسی‌های نقش با موفقیت بروزرسانی شد"})
+        
+        return {"success": True, "results": results}
         
     except Exception as e:
         print(f"Error in edit_role_permission: {str(e)}")
@@ -157,6 +217,15 @@ def edit_role_permission(
 def get_role_list(
             permission = Depends(permission_required(Permissions.USER_MANAGE)),
             ):
+    """
+    دریافت لیست نقش‌های سیستم
+
+    Get list of system roles
+    
+    نیاز به دسترسی USER_MANAGE دارد
+    
+    Requires USER_MANAGE permission
+    """
     try:
         if isinstance(permission, dict) and "error" in permission:
             raise HTTPException(status_code=403, detail="Access denied")
