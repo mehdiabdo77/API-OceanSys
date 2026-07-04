@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel
 
 class User(BaseModel):
@@ -6,4 +7,4 @@ class User(BaseModel):
     last_name : str
     password : str
     isactive : bool
-    role_id : int # (Foreign Key → role_tbl.id)
+    role_id : Optional[int] = None # (Foreign Key → role_tbl.id)

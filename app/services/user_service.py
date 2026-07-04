@@ -76,23 +76,33 @@ def getAllUsersDB(
                db.close()
 
 def saveUserDB(
-     dataUser : User
+     dataUser : User,
+     role_id : Optional[int] = None
 ):
      db = None
      password_hash = hash_password(dataUser.password)
      try:
           db = SessionLocal()
+          
+          # اگر role_id ارائه شده است، از آن استفاده کن
+          final_role_id = role_id if role_id is not None else dataUser.role_id
+          
+          if final_role_id is None:
+               return {"message": "Role ID is required"}
+          
           user_record = UserModel(
                username = dataUser.username,
                first_name = dataUser.first_name,
                last_name = dataUser.last_name,
                password_hash = password_hash,
                is_active = True,
-               role_id = dataUser.role_id
+               role_id = final_role_id
                )
           db.add(user_record)
           db.commit()
-          return {"message": "successfully"}
+          db.refresh(user_record)
+          
+          return {"message": "successfully", "user_id": user_record.id}
      except Exception as e:
           if db is not None:
               db.rollback()

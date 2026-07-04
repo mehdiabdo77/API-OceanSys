@@ -366,6 +366,62 @@ def create_permission(code: str, name: str, description: Optional[str] = None):
             db.close()
 
 
+def get_or_create_admin_role():
+    """
+    دریافت یا ایجاد نقش ADMIN و اختصاص تمام دسترسی‌ها به آن
+    """
+    db = None
+    try:
+        db = SessionLocal()
+        
+        # بررسی وجود نقش ADMIN
+        admin_role = db.query(RoleModel).filter(RoleModel.name == "ADMIN").first()
+        
+        if not admin_role:
+            # ایجاد نقش ADMIN
+            admin_role = RoleModel(
+                name="ADMIN",
+                description="دسترسی کامل به تمام بخش‌های سیستم"
+            )
+            db.add(admin_role)
+            db.commit()
+            db.refresh(admin_role)
+        
+        # دریافت تمام دسترسی‌ها
+        all_permissions = db.query(PermissionModel).all()
+        
+        # برای هر دسترسی، بررسی کنید که آیا به نقش ADMIN اختصاص داده شده است یا نه
+        for perm in all_permissions:
+            existing = db.query(RolePermissionModel).filter(
+                RolePermissionModel.role_id == admin_role.id,
+                RolePermissionModel.permission_id == perm.id
+            ).first()
+            
+            if not existing:
+                # اگر دسترسی وجود نداشته باشد، اضافه کنید
+                db.add(RolePermissionModel(
+                    role_id=admin_role.id,
+                    permission_id=perm.id
+                ))
+        
+        db.commit()
+        db.refresh(admin_role)
+        
+        return {
+            "success": True,
+            "role_id": admin_role.id,
+            "role_name": admin_role.name
+        }
+    except Exception as e:
+        if db:
+            db.rollback()
+        print(f"Error in get_or_create_admin_role: {str(e)}")
+        return {"error": str(e)}
+    finally:
+        if db:
+            db.close()
+
+
 def get_role():
     """
     دریافت لیست تمام نقش‌های سیستم

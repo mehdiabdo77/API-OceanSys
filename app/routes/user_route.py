@@ -3,6 +3,7 @@ from app.auth.auth_handler import get_current_user
 from app.auth.permissions import permission_required
 from app.schemas.response_schemas import UserModel
 from app.services.user_service import Countuser, getAllUsersDB, getUserDB, saveUserDB
+from app.services.permission_service import get_or_create_admin_role
 from app.schemas.user_schemas import User
 from app.utils.constans import Permissions
 
@@ -22,12 +23,21 @@ def register_first_user(data: User):
     """
     count = Countuser()
     if isinstance(count, int) and count == 0:
-        result = saveUserDB(data)
+        # ایجاد یا دریافت نقش ADMIN
+        admin_role = get_or_create_admin_role()
+        if "error" in admin_role:
+            raise HTTPException(status_code=400, detail=admin_role["error"])
+        
+        admin_role_id = admin_role["role_id"]
+        
+        # ذخیره کاربر با نقش ADMIN
+        result = saveUserDB(data, role_id=admin_role_id)
         if result["message"] == "successfully":
             return {
                 "success": True,
-                "message": "کاربر اول با موفقیت ایجاد شد",
-                "data": result
+                "message": "کاربر اول با موفقیت ایجاد شد و به نقش ADMIN اختصاص داده شد",
+                "data": result,
+                "role": admin_role
             }
         else:
             raise HTTPException(status_code=400, detail="Error in saving user")
