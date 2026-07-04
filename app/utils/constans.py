@@ -9,3 +9,5 @@ class Permissions(str, Enum):
     CUSTOMER_SCAN = "CUSTOMER_SCAN"           # مشاهده/اسکن اطلاعات مشتری
     NEW_CUSTOMER = "NEW_CUSTOMER"             # ثبت مشتری جدید
     COMPETITOR_PRICES = "COMPETITOR_PRICES"   # مشاهده قیمت رقبا
+    ROLE_MANAGE = "ROLE_MANAGE"               # مدیریت نقش‌ها
+    PERMISSION_MANAGE = "PERMISSION_MANAGE"   # مدیریت دسترسی‌ها

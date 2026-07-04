@@ -1,4 +1,5 @@
 from operator import and_
+from typing import Optional
 from fastapi import HTTPException
 from sqlalchemy import Case, false
 from app.core.base import SessionLocal 
@@ -269,17 +270,122 @@ def update_role_permissions(
         if db:
             db.close()
             
-def get_role():
+def get_all_permissions():
+    """
+    دریافت لیست تمام دسترسی‌های سیستم با آیدی و اطلاعاتشان
+    """
     db = None
     try:
         db = SessionLocal()
-        role = db.query(RoleModel).all()
-        print(role)
-        return role
+        permissions = db.query(PermissionModel).all()
+        result = []
+        for perm in permissions:
+            result.append({
+                "id": perm.id,
+                "code": perm.code,
+                "name": perm.name,
+                "description": perm.description
+            })
+        return result
     except Exception as e:
         if db:
             db.rollback()
-        print(f"Error updating user permissions: {str(e)}")
+        print(f"Error fetching all permissions: {str(e)}")
+        return {"error": str(e)}
+    finally:
+        if db:
+            db.close()
+
+
+def create_role(name: str, description: Optional[str] = None):
+    """
+    ایجاد نقش جدید
+    """
+    db = None
+    try:
+        db = SessionLocal()
+        existing_role = db.query(RoleModel).filter_by(name=name).first()
+        if existing_role:
+            return {"error": "نقش با این نام قبلاً وجود دارد"}
+        
+        new_role = RoleModel(name=name, description=description)
+        db.add(new_role)
+        db.commit()
+        db.refresh(new_role)
+        
+        return {
+            "success": True,
+            "data": {
+                "id": new_role.id,
+                "name": new_role.name,
+                "description": new_role.description
+            }
+        }
+    except Exception as e:
+        if db:
+            db.rollback()
+        print(f"Error creating role: {str(e)}")
+        return {"error": str(e)}
+    finally:
+        if db:
+            db.close()
+
+
+def create_permission(code: str, name: str, description: Optional[str] = None):
+    """
+    ایجاد دسترسی جدید
+    """
+    db = None
+    try:
+        db = SessionLocal()
+        existing_permission = db.query(PermissionModel).filter_by(code=code).first()
+        if existing_permission:
+            return {"error": "دسترسی با این کد قبلاً وجود دارد"}
+        
+        new_permission = PermissionModel(code=code, name=name, description=description)
+        db.add(new_permission)
+        db.commit()
+        db.refresh(new_permission)
+        
+        return {
+            "success": True,
+            "data": {
+                "id": new_permission.id,
+                "code": new_permission.code,
+                "name": new_permission.name,
+                "description": new_permission.description
+            }
+        }
+    except Exception as e:
+        if db:
+            db.rollback()
+        print(f"Error creating permission: {str(e)}")
+        return {"error": str(e)}
+    finally:
+        if db:
+            db.close()
+
+
+def get_role():
+    """
+    دریافت لیست تمام نقش‌های سیستم
+    """
+    db = None
+    try:
+        db = SessionLocal()
+        roles = db.query(RoleModel).all()
+        result = []
+        for role in roles:
+            result.append({
+                "id": role.id,
+                "name": role.name,
+                "description": role.description
+            })
+        return result
+    except Exception as e:
+        if db:
+            db.rollback()
+        print(f"Error fetching roles: {str(e)}")
         return {"error": str(e)}
     finally:
         if db:
