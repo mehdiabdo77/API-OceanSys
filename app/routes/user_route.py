@@ -2,12 +2,33 @@ from fastapi import APIRouter, Body, Depends, HTTPException
 from app.auth.auth_handler import get_current_user
 from app.auth.permissions import permission_required
 from app.schemas.response_schemas import UserModel
-from app.services.user_service import Countuser, getAllUsersDB, getUserDB, saveUserDB
+from app.services.user_service import Countuser, getAllUsersDB, getUserDB, saveUserDB, set_user_status
 from app.services.permission_service import get_or_create_admin_role
 from app.schemas.user_schemas import User
 from app.utils.constans import Permissions
 
 user_router = APIRouter(tags=['user'])
+
+
+@user_router.patch("/{username}/status")
+def toggle_user_status(
+    username: str,
+    is_active: bool,
+    admin_id: str = Depends(permission_required(Permissions.USER_MANAGE))
+):
+    """
+    فعال یا غیرفعال کردن کاربر بر اساس نام کاربری
+    """
+    if isinstance(admin_id, dict) and "error" in admin_id:
+        raise HTTPException(status_code=403, detail="Unauthorized")
+        
+    result = set_user_status(username, is_active)
+    if result["message"] == "successfully":
+        return {"success": True, "message": "وضعیت کاربر با موفقیت تغییر کرد"}
+    elif result["message"] == "User not found":
+        raise HTTPException(status_code=404, detail="کاربر یافت نشد")
+    else:
+        raise HTTPException(status_code=400, detail=result["message"])
 
 
 @user_router.post("/setup-first-user")

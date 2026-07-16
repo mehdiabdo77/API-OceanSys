@@ -138,6 +138,27 @@ def Countuser():
                db.close()
                
                
+def set_user_status(username: str, is_active: bool):
+     db = None
+     try:
+          db = SessionLocal()
+          user = db.query(UserModel).filter(UserModel.username == username).first()
+          if not user:
+               return {"message": "User not found"}
+          
+          user.is_active = is_active
+          db.commit()
+          return {"message": "successfully"}
+     except Exception as e:
+          if db:
+               db.rollback()
+          print(f"Error in set_user_status: {str(e)}")
+          return {"message": "Error updating user status"}
+     finally:
+          if db:
+               db.close()
+               
+               
 def getAllUsersDB():
      db = None
      try:
