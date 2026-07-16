@@ -75,20 +75,31 @@ def getAllUsersDB(
           if db is not None:
                db.close()
 
+from app.models.user.role_model import RoleModel # اضافه شد برای جستجوی نام نقش
+
 def saveUserDB(
      dataUser : User,
-     role_id : Optional[int] = None
+     role_name : Optional[str] = None
 ):
      db = None
      password_hash = hash_password(dataUser.password)
      try:
           db = SessionLocal()
           
-          # اگر role_id ارائه شده است، از آن استفاده کن
-          final_role_id = role_id if role_id is not None else dataUser.role_id
+          # استفاده از نام نقش برای پیدا کردن آیدی
+          final_role_name = role_name if role_name is not None else (dataUser.role.value if dataUser.role else None)
           
-          if final_role_id is None:
-               return {"message": "Role ID is required"}
+          if final_role_name is None:
+               return {"message": "Role is required"}
+          
+          # بررسی تکراری بودن نام کاربری
+          existing_user = db.query(UserModel).filter(UserModel.username == dataUser.username).first()
+          if existing_user:
+               return {"message": "username_already_exists"}
+               
+          role_record = db.query(RoleModel).filter(RoleModel.name == final_role_name.upper()).first()
+          if not role_record:
+               return {"message": f"Role {final_role_name} not found"}
           
           user_record = UserModel(
                username = dataUser.username,
@@ -96,7 +107,7 @@ def saveUserDB(
                last_name = dataUser.last_name,
                password_hash = password_hash,
                is_active = True,
-               role_id = final_role_id
+               role_id = role_record.id
                )
           db.add(user_record)
           db.commit()

@@ -59,15 +59,22 @@ def register_user(
 
     Requires USER_MANAGE permission
     """
-    if isinstance(user_id, dict) and "error" in user_id:
+    if not isinstance(user_id, dict) or "error" not in user_id:
         result = saveUserDB(data)
+        
+        if isinstance(result, dict) and result.get("message") == "username_already_exists":
+            raise HTTPException(status_code=400, detail="نام کاربری تکراری است")
+        
+        if isinstance(result, dict) and result.get("message") == "User saved unsuccessfully":
+            raise HTTPException(status_code=500, detail="خطا در ذخیره کاربر")
+            
         return {
             "success": True,
             "message": "کاربر با موفقیت ایجاد شد",
             "data": result
         }
     else:
-        raise HTTPException(status_code=400, detail="You are not authorized to register users")
+        raise HTTPException(status_code=403, detail="You are not authorized to register users")
 
 
 @user_router.get("/getUserdata", response_model=UserModel)

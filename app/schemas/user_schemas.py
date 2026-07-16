@@ -1,5 +1,6 @@
 from typing import Optional
 from pydantic import BaseModel
+from app.utils.constans import RoleName
 
 class User(BaseModel):
     username: str 
@@ -7,4 +8,4 @@ class User(BaseModel):
     last_name : str
     password : str
     isactive : bool
-    role_id : Optional[int] = None # (Foreign Key → role_tbl.id)
+    role: Optional[RoleName] = None # استفاده از نام نقش به جای آیدی
