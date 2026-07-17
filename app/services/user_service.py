@@ -43,6 +43,33 @@ def getUserDB(
           if db is not None:
                db.close()
 
+
+def change_user_role(username: str, role_name: str):
+    db = None
+    try:
+        db = SessionLocal()
+        # پیدا کردن کاربر
+        user = db.query(UserModel).filter(UserModel.username == username).first()
+        if not user:
+            return {"message": "User not found"}
+            
+        # پیدا کردن نقش
+        role = db.query(RoleModel).filter(RoleModel.name == role_name.upper()).first()
+        if not role:
+            return {"message": "Role not found"}
+            
+        user.role_id = role.id
+        db.commit()
+        return {"message": "successfully"}
+    except Exception as e:
+        if db:
+            db.rollback()
+        print(f"Error in change_user_role: {str(e)}")
+        return {"message": "Error updating user role"}
+    finally:
+        if db:
+            db.close()
+
 def getAllUsersDB(
      user: Optional[int | str]
 ):

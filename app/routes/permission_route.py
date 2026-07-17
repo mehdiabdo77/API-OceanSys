@@ -18,6 +18,7 @@ from app.services.permission_service import (
     create_role,
     create_permission
 )
+from app.services.user_service import change_user_role
 from app.auth.auth_handler import get_current_user
 from app.utils.constans import Permissions
 
@@ -252,3 +253,26 @@ def create_permission_endpoint(
     except Exception as e:
         print(f"Error in create_permission_endpoint: {str(e)}")
         raise HTTPException(status_code=500, detail=f"خطا در ایجاد دسترسی: {str(e)}")
+
+
+@permission_router.patch("/change_user_role")
+def change_user_role_endpoint(
+    username: str,
+    role_name: str,
+    permission=Depends(permission_required(Permissions.USER_MANAGE))
+):
+    """
+    تغییر نقش کاربر توسط ادمین
+    """
+    if isinstance(permission, dict) and "error" in permission:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    result = change_user_role(username, role_name)
+    if result["message"] == "successfully":
+        return {"success": True, "message": "نقش کاربر با موفقیت تغییر کرد"}
+    elif result["message"] == "User not found":
+        raise HTTPException(status_code=404, detail="کاربر یافت نشد")
+    elif result["message"] == "Role not found":
+        raise HTTPException(status_code=404, detail="نقش یافت نشد")
+    else:
+        raise HTTPException(status_code=400, detail=result["message"])
