@@ -65,3 +65,60 @@ def set_job_user(data: JobUserRequest, user_id: int):
             db.close()
 
 
+
+def del_job_user(data: JobUserRequest, user_id: int):
+    db = None
+    try:
+        db = SessionLocal()
+
+        user = db.query(UserModel).filter(UserModel.id == user_id).first()
+        if not user:
+            return {"error": "User not found", "success": False}
+
+        # پیدا کردن مشتریان بر اساس فیلترهای ارسالی
+        customers = db.query(CustomerModel).filter(
+            CustomerModel.route == data.route,
+            CustomerModel.area == data.area,
+            CustomerModel.region == data.region
+        ).all()
+
+        if not customers:
+            return {"error": "No customers found for the given criteria", "success": False}
+
+        customer_ids = [c.customer_code for c in customers]
+
+        # پیدا کردن گزارش‌های تخصیص‌یافته به این کاربر که هنوز ویزیت نشده‌اند
+        reports_query = db.query(VisitReportModel).filter(
+            VisitReportModel.customer_id.in_(customer_ids),
+            VisitReportModel.user_id == user_id,
+            VisitReportModel.edit_status == False
+        )
+
+        reports = reports_query.all()
+
+        if not reports:
+            return {"error": "No unassigned/pending visit reports found to delete", "success": False}
+
+        deleted_count = reports_query.delete(synchronize_session=False)
+        db.commit()
+
+        return {
+            "message": f"Successfully deleted {deleted_count} visit report(s) for user {user.username}",
+            "success": True
+        }
+
+    except Exception as e:
+        if db:
+            db.rollback()
+        print(f"Unexpected error: {str(e)}")
+        return {"error": str(e), "success": False}
+    finally:
+        if db is not None:
+            db.close()
+
+# {
+#   "route": "104",
+#   "area": "04",
+#   "region": "41",
+#   "visit_date": "2024-01-16"
+# }
