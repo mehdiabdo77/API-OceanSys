@@ -11,6 +11,7 @@ class Permissions(str, Enum):
     COMPETITOR_PRICES = "COMPETITOR_PRICES"   # مشاهده قیمت رقبا
     ROLE_MANAGE = "ROLE_MANAGE"               # مدیریت نقش‌ها
     PERMISSION_MANAGE = "PERMISSION_MANAGE"   # مدیریت دسترسی‌ها
+    JOB_ROUTE = "JOB_ROUTE"                   #ّبرنامه مسیر بندی 
 
 class RoleName(str, Enum):
     ADMIN = "admin"
