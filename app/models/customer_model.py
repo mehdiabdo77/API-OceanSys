@@ -20,6 +20,7 @@ class CustomerModel(Base):
     mobile = Column(String(11), nullable=True)
     mobile2 = Column(String(11), nullable=True)
     postal_code = Column(String(12), nullable=True)
+    region = Column(String(10), nullable=True)
     
     image_address = Column(Text, nullable=True , default="")
 

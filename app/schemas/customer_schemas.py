@@ -35,6 +35,11 @@ class CRMCustomerDescription(BaseModel):
 class TaskComplete(BaseModel):
     customer_code: str 
     
+class JobUserRequest(BaseModel):
+    route: str
+    area: str
+    region: str
+    visit_date: str
 
 class CustomerModel(BaseModel):
     customer_code: int 
