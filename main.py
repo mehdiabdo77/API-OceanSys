@@ -6,6 +6,8 @@ from app.routes.permission_route import permission_router
 from app.routes.Customer import  customer_router
 from app.routes.point import point_router
 from app.routes.visit import visit_router
+from app.routes.user_job import job_user_router
+
 from app.core.db_setup import initialize_database
 
 
@@ -23,3 +25,5 @@ app.include_router(permission_router)
 app.include_router(customer_router)
 app.include_router(point_router)
 app.include_router(visit_router)
+app.include_router(job_user_router)
+
