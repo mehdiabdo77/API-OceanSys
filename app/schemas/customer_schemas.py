@@ -40,6 +40,7 @@ class JobUserRequest(BaseModel):
     area: str
     region: str
     visit_date: str
+    userId:int
 
 class CustomerModel(BaseModel):
     customer_code: int 

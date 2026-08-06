@@ -19,7 +19,7 @@ def set_rout(
      if isinstance(permission, dict) and "error" in permission:
         raise HTTPException(status_code=403, detail="Access denied")
      else:
-        result = set_job_user(data, user_id)
+        result = set_job_user(data)
         if not result.get("success"):
             raise HTTPException(status_code=400, detail=result.get("error"))
         return result
@@ -37,7 +37,7 @@ def del_rout(
     if isinstance(permission, dict) and "error" in permission:
         raise HTTPException(status_code=403, detail="Access denied")
     else:
-        result = del_job_user(data, user_id)
+        result = del_job_user(data)
         if not result.get("success"):
                raise HTTPException(status_code=400, detail=result.get("error"))
         return result

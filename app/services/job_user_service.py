@@ -11,13 +11,13 @@ from app.models.customer_analysis.visit_report import VisitReportModel
 from app.schemas.customer_schemas import CustomerEdit, DisActiveDescription , ProductCategory, CRMCustomerDescription, JobUserRequest
 from ..core.base import SessionLocal, engine
 
-def set_job_user(data: JobUserRequest, user_id: int):
+def set_job_user(data: JobUserRequest):
     db = None
     try:
         db = SessionLocal()
         
         # پیدا کردن کاربر بر اساس ID از توکن
-        user = db.query(UserModel).filter(UserModel.id == user_id).first()
+        user = db.query(UserModel).filter(UserModel.id == data.userId).first()
         if not user:
             return {"error": "User not found", "success": False}
         
@@ -66,12 +66,12 @@ def set_job_user(data: JobUserRequest, user_id: int):
 
 
 
-def del_job_user(data: JobUserRequest, user_id: int):
+def del_job_user(data: JobUserRequest):
     db = None
     try:
         db = SessionLocal()
 
-        user = db.query(UserModel).filter(UserModel.id == user_id).first()
+        user = db.query(UserModel).filter(UserModel.id == data.userId).first()
         if not user:
             return {"error": "User not found", "success": False}
 
@@ -90,7 +90,7 @@ def del_job_user(data: JobUserRequest, user_id: int):
         # پیدا کردن گزارش‌های تخصیص‌یافته به این کاربر که هنوز ویزیت نشده‌اند
         reports_query = db.query(VisitReportModel).filter(
             VisitReportModel.customer_id.in_(customer_ids),
-            VisitReportModel.user_id == user_id,
+            VisitReportModel.user_id == data.userId,
             VisitReportModel.edit_status == False
         )
 
