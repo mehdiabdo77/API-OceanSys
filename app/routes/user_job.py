@@ -14,6 +14,7 @@ def set_rout(
      permission=Depends(permission_required(Permissions.JOB_ROUTE)),
      user_id: int = Depends(get_current_user)
      ):
+     print(data.visit_date)
     #  if user_id is None:
     #     raise HTTPException(status_code=401, detail="Invalid credentials")
      if isinstance(permission, dict) and "error" in permission:

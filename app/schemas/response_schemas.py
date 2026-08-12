@@ -2,7 +2,7 @@ from typing import Optional, Union
 from pydantic import BaseModel
 
 class UserModel(BaseModel):
-    # id: int
+    id: int
     username: str
     first_name: str
     last_name: str

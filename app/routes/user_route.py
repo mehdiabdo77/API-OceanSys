@@ -115,6 +115,7 @@ def get_user_data(user_id=Depends(get_current_user)):
     return user
 
 
+# TODO دسترسی ایجا باید تغییر کنه به نظرم
 @user_router.get("/getAllUserdata", response_model=list[UserModel])
 def get_all_user_data(
         user_id: str = Depends(permission_required(Permissions.USER_MANAGE))
