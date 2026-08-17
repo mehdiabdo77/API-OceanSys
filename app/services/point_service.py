@@ -20,7 +20,7 @@ def save_point(data: Point, username: str):
             date_miladi = date_miladi
             )
         db.add(point_record)
-            
+        db.commit()
         return {"message": "Point saved successfully"}
             
     except Exception as e:

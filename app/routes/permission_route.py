@@ -12,6 +12,7 @@ from app.schemas.permission_schemas import (
 from app.services.permission_service import (
     get_all_permission_user,
     get_role,
+    get_all_roles_permissions,
     update_role_permissions,
     update_user_permissions,
     get_all_permissions,
@@ -133,6 +134,39 @@ def edit_role_permission(
     except Exception as e:
         print(f"Error in edit_role_permission: {str(e)}")
         raise HTTPException(status_code=500, detail=f"خطا در بروزرسانی دسترسی‌ها: {str(e)}")
+
+
+@permission_router.get("/get_all_roles_permissions")
+def get_all_roles_permissions_endpoint(
+            permission=Depends(permission_required(Permissions.USER_MANAGE)),
+            ):
+    """
+    دریافت لیست دسترسی‌های تمام نقش‌های سیستم
+    
+    Get permissions of all system roles
+    
+    نیاز به دسترسی USER_MANAGE دارد
+    
+    Requires USER_MANAGE permission
+    """
+    try:
+        if isinstance(permission, dict) and "error" in permission:
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        result = get_all_roles_permissions()
+        if isinstance(result, dict) and "error" in result:
+            raise HTTPException(status_code=400, detail=result["error"])
+        
+        if result.get("status") == True:
+            return result["data"]
+        else:
+            raise HTTPException(status_code=400, detail="خطا در دریافت دسترسی‌های نقش‌ها")
+        
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        print(f"Error in get_all_roles_permissions_endpoint: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"خطا در دریافت دسترسی‌های نقش‌ها: {str(e)}")
 
 
 @permission_router.get("/get_role_list", response_model=list[RoleSchema])

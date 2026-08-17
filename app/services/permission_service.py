@@ -191,6 +191,60 @@ def update_user_permissions(
             db.close()
             
 
+def get_all_roles_permissions():
+    """
+    دریافت لیست دسترسی‌های تمام نقش‌های سیستم
+    """
+    db = None
+    try:
+        db = SessionLocal()
+        roles = db.query(RoleModel).all()
+        permissions = db.query(PermissionModel).order_by(PermissionModel.code).all()
+        
+        all_roles_data = []
+        for role in roles:
+            quaryresult = (
+                db.query(
+                    PermissionModel.code,
+                    case(
+                        (
+                            db.query(RolePermissionModel)
+                            .join(RoleModel, RoleModel.id == RolePermissionModel.role_id)
+                            .filter(
+                                RolePermissionModel.permission_id == PermissionModel.id,
+                                RoleModel.name == role.name
+                            )
+                            .exists(),
+                            literal("ALLOW")
+                        ),
+                        else_=literal("DENY")
+                    ).label("has_access")
+                )
+                .select_from(PermissionModel)
+                .order_by(PermissionModel.code)
+            )
+            results = quaryresult.all()
+            permissions_data = [{"code": code, "has_access": (has_access == "ALLOW")} for code, has_access in results]
+            
+            all_roles_data.append({
+                "role_id": role.id,
+                "role_name": role.name,
+                "description": role.description,
+                "permissions": permissions_data
+            })
+            
+        return {"status": True, "data": all_roles_data}
+
+    except Exception as e:
+        if db:
+            db.rollback()
+        print(f"Error fetching all roles permissions: {str(e)}")
+        return {"error": str(e)}
+    finally:
+        if db:
+            db.close()
+
+
 def update_role_permissions(
     role: str,
     permissions_list: list[dict] # [{'permission': 'CUSTOMER_SCAN', 'grant_type': 'ALLOW'}, {'permission': 'CUSTOMER_REGISTER', 'grant_type': 'DENY'}]
