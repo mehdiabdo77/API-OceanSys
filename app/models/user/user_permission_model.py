@@ -12,12 +12,12 @@ class UserPermissionModel(Base):
     __tablename__ = "UserPermission"
     __table_args__ = (
         UniqueConstraint('user_id', 'permission_id', name='uq_user_permission'),
-        {"schema": "security"}
+        {"schema": "Security"}
     )
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("security.UserAccount.id", ondelete="CASCADE"), nullable=False)
-    permission_id = Column(Integer, ForeignKey("security.Permission.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("Security.UserAccount.id", ondelete="CASCADE"), nullable=False)
+    permission_id = Column(Integer, ForeignKey("Security.Permission.id", ondelete="CASCADE"), nullable=False)
     grant_type = Column(Enum(GrantType), default=GrantType.ALLOW)   
 
     user = relationship("UserModel", back_populates="permissions")

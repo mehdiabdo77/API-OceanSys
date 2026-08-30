@@ -11,8 +11,8 @@ class RolePermissionModel(Base):
     )
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    role_id = Column(Integer, ForeignKey("security.Role.id", ondelete="CASCADE"), nullable=False)
-    permission_id = Column(Integer, ForeignKey("security.Permission.id", ondelete="CASCADE"), nullable=False)
+    role_id = Column(Integer, ForeignKey("Security.Role.id", ondelete="CASCADE"), nullable=False)
+    permission_id = Column(Integer, ForeignKey("Security.Permission.id", ondelete="CASCADE"), nullable=False)
 
     role = relationship("RoleModel", back_populates="permissions")
     permission = relationship("PermissionModel", back_populates="roles")
