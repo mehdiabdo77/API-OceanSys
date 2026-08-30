@@ -9,16 +9,16 @@ class GrantType(enum.Enum):
     DENY = "DENY"
 
 class UserPermissionModel(Base):
-    __tablename__ = "user_permission_tbl"
+    __tablename__ = "UserPermission"
+    __table_args__ = (
+        UniqueConstraint('user_id', 'permission_id', name='uq_user_permission'),
+        {"schema": "security"}
+    )
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("user_tbl.id", ondelete="CASCADE"), nullable=False)
-    permission_id = Column(Integer, ForeignKey("permission_tbl.id", ondelete="CASCADE"), nullable=False)
-    grant_type = Column(Enum(GrantType), default=GrantType.ALLOW)
+    user_id = Column(Integer, ForeignKey("security.UserAccount.id", ondelete="CASCADE"), nullable=False)
+    permission_id = Column(Integer, ForeignKey("security.Permission.id", ondelete="CASCADE"), nullable=False)
+    grant_type = Column(Enum(GrantType), default=GrantType.ALLOW)   
 
     user = relationship("UserModel", back_populates="permissions")
     permission = relationship(PermissionModel, back_populates="users")  # تغییر به استفاده مستقیم از کلاس
-
-    __table_args__ = (
-        UniqueConstraint('user_id', 'permission_id', name='uq_user_permission'),
-    )

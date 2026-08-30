@@ -4,7 +4,8 @@ from app.core.base import Base
 from app.models.user.role_permission_model import RolePermissionModel
 
 class RoleModel(Base):
-     __tablename__ = "role_tbl"
+     __tablename__ = "Role"
+     __table_args__ = {"schema": "Security"}
 
      id = Column(Integer, primary_key=True, autoincrement=True)
      name = Column(String(100), unique=True, nullable=False)

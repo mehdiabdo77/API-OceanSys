@@ -3,7 +3,8 @@ from sqlalchemy.orm import relationship
 from app.core.base import Base
 
 class PermissionModel(Base):
-     __tablename__ = "permission_tbl"
+     __tablename__ = "Permission"
+     __table_args__ = {"schema": "Security"}
 
      id = Column(Integer, primary_key=True, autoincrement=True)
      code = Column(String(100), unique=True, nullable=False)

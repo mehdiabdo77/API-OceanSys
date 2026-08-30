@@ -3,11 +3,11 @@ from sqlalchemy.orm import relationship
 from app.core.base import Base
 
 class VisitReportModel(Base):
-    __tablename__ = "visit_reports"
-
+    __tablename__ = "CustomerVisit"
+    __table_args__ = {"schema": "Scanner"}
     id = Column(Integer, primary_key=True, autoincrement=True)
     customer_id = Column(Integer, ForeignKey("customer.customer_code"), nullable=False)
-    user_id = Column(Integer, ForeignKey("user_tbl.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("Security.UserAccount.id"), nullable=False)
     edit_status = Column(Boolean, default=False, nullable=False)
     visit_status = Column(Integer, default=0)
     visit_Date = Column(DateTime, nullable=True)

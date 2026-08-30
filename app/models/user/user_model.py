@@ -6,7 +6,8 @@ from app.models.user.role_model import RoleModel
 from app.models.user.user_permission_model import UserPermissionModel  # اضافه کردن این import
 
 class UserModel(Base):
-    __tablename__ = "user_tbl"
+    __tablename__ = "UserAccount"
+    __table_args__ = {"schema": "Security"}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(200), unique=True, nullable=False)
@@ -14,7 +15,7 @@ class UserModel(Base):
     last_name = Column(String(255), nullable=False)
     password_hash = Column(String(255), nullable=False)
     is_active = Column(Integer, default=True)
-    role_id = Column(Integer, ForeignKey("role_tbl.id"), nullable=False)
+    role_id = Column(Integer, ForeignKey("Security.Role.id"), nullable=False)
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 

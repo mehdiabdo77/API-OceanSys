@@ -4,7 +4,9 @@ from app.core.base import Base
 
 
 class CustomerIditModel(Base):
-     __tablename__ = "CustomerIditTBL"
+     __tablename__ = "CustomerIdit"
+     __table_args__ = {"schema": "Scanner"}
+     
      customer_code = Column(Integer, primary_key=True, nullable=False)
      national_code = Column(String(12), nullable=True)
      role_code = Column(String(20), nullable=True)
@@ -16,7 +18,7 @@ class CustomerIditModel(Base):
      mobile_number2 = Column(String(20), nullable=True)
      phone_number = Column(String(20), nullable=True)
      store_area = Column(Integer, nullable=True)
-     user_id = Column(Integer, ForeignKey("user_tbl.id"), nullable=False)
+     user_id = Column(Integer, ForeignKey("Security.UserAccount.id"), nullable=False)
      created_at = Column(DateTime, nullable=True)
      
      user = relationship("UserModel", backref="customer_edits")

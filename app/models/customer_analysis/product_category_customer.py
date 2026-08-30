@@ -6,12 +6,13 @@ from app.core.base import Base
 
 
 class ProductCategoryCustomerModel(Base):
-     __tablename__ = "ProductCategoryCustomer"
+     __tablename__ = "CustomerProductCategory"
+     __table_args__ = {"schema": "Scanner"}
 
      id = Column(Integer, primary_key=True, autoincrement=True) 
      customer_code = Column(Integer,nullable=False )  
      sku = Column(String(100), nullable=False)    
-     user_id = Column(Integer, ForeignKey("user_tbl.id"), nullable=False)
+     user_id = Column(Integer, ForeignKey("Security.UserAccount.id"), nullable=False)
      created_at = Column(DateTime, nullable=True)
 
      # رابطه با کاربر
