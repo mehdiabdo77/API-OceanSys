@@ -4,7 +4,10 @@ from app.core.base import Base
 
 
 class PointModel(Base):
-    __tablename__ = "Point_tbl"
+    __tablename__ = "MapPoint"
+    __table_args__ = (
+        {"schema": "Geo"}
+    )
 
     customer_code = Column(Integer, primary_key=True)
     lat = Column(DECIMAL(9,6), nullable=True)

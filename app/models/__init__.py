@@ -5,11 +5,12 @@ from app.models.user.role_permission_model import RolePermissionModel
 from app.models.user.user_permission_model import UserPermissionModel
 from app.models.customer_model import CustomerModel
 from app.models.point_model import PointModel
-from app.models.customer_analysis.disactive_description_model import DisActiveDescriptionModel
-from app.models.customer_analysis.CRM_customer_description import CRMCustomerDescriptionModel
-from app.models.customer_analysis.Customer_Idit import CustomerIditModel
-from app.models.customer_analysis.product_category_customer import ProductCategoryCustomerModel
-from app.models.customer_analysis.visit_report import VisitReportModel
+from app.models.scanner.disactive_description_model import DisActiveDescriptionModel
+from app.models.scanner.CRM_customer_description import CRMCustomerDescriptionModel
+from app.models.scanner.Customer_Idit import CustomerIditModel
+from app.models.scanner.product_category_customer import ProductCategoryCustomerModel
+from app.models.scanner.visit_report import VisitReportModel
+
 
 __all__ = [
     "UserModel",

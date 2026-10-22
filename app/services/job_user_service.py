@@ -1,13 +1,13 @@
 from sqlalchemy import desc, func, text
 import jdatetime
 from datetime import datetime
-from app.models.customer_analysis.CRM_customer_description import CRMCustomerDescriptionModel
+from app.models.scanner.CRM_customer_description import CRMCustomerDescriptionModel
 from app.models.customer_model import CustomerModel
-from app.models.customer_analysis.disactive_description_model import DisActiveDescriptionModel
-from app.models.customer_analysis.Customer_Idit import CustomerIditModel
-from app.models.customer_analysis.product_category_customer import ProductCategoryCustomerModel
+from app.models.scanner.disactive_description_model import DisActiveDescriptionModel
+from app.models.scanner.Customer_Idit import CustomerIditModel
+from app.models.scanner.product_category_customer import ProductCategoryCustomerModel
 from app.models.user.user_model import UserModel
-from app.models.customer_analysis.visit_report import VisitReportModel
+from app.models.scanner.visit_report import VisitReportModel
 from app.schemas.customer_schemas import CustomerEdit, DisActiveDescription , ProductCategory, CRMCustomerDescription, JobUserRequest
 from ..core.base import SessionLocal, engine
 

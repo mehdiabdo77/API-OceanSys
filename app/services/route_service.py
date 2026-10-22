@@ -1,7 +1,7 @@
 from sqlalchemy import func
 from ..core.base import  SessionLocal
 from ..models.customer_model import CustomerModel
-from ..models.customer_analysis.visit_report import VisitReportModel
+from ..models.scanner.visit_report import VisitReportModel
 from ..models.user.user_model import UserModel
 
 def get_routes(): 

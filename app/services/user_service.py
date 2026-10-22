@@ -191,6 +191,7 @@ def getAllUsersDB():
      try:
           db = SessionLocal()
           query_result = db.query(UserModel).all()
+          print(query_result,0000)
           users_list = []
           
           for user in query_result:

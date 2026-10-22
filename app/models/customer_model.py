@@ -4,7 +4,9 @@ from app.core.base import Base
 
 class CustomerModel(Base):
     __tablename__ = "customer"
-
+    __table_args__ = (
+        {"schema": "Core"}
+    )
     customer_code = Column(Integer, primary_key=True)
     customer_name = Column(String(150), nullable=False)
     customer_board = Column(String(150), nullable=False)

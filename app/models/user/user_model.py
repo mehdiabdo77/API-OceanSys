@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, func
 from sqlalchemy.orm import relationship
 from app.core.base import Base
-from app.models.customer_analysis.visit_report import VisitReportModel
+from app.models.scanner.visit_report import VisitReportModel
 from app.models.user.role_model import RoleModel
 from app.models.user.user_permission_model import UserPermissionModel  # اضافه کردن این import
 
