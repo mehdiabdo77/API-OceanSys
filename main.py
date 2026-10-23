@@ -3,10 +3,10 @@ from contextlib import asynccontextmanager
 from app.routes.auth_router import auth_router
 from app.routes.user_route import  user_router
 from app.routes.permission_route import permission_router
-from app.routes.Customer import  customer_router
+from app.routes.Scanner.Customer import  customer_router
 from app.routes.point import point_router
-from app.routes.visit import visit_router
-from app.routes.user_job import job_user_router
+from app.routes.Scanner.visit import visit_router
+from app.routes.Scanner.user_job import job_user_router
 
 from app.core.db_setup import initialize_database
 
